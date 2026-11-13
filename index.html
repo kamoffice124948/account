@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Student Account Management</title>
 <link rel="manifest" href="manifest.webmanifest">
+<script src="config.js"></script>
 <meta name="theme-color" content="#0f766e">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -106,6 +107,31 @@ td.n,th.n{text-align:right}
 .sesbox{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px}.sesbox select{font-weight:600}
 @media print{.tw.fixh{max-height:none!important;overflow:visible!important}table th,table td{position:static!important;box-shadow:none!important;max-width:none!important}.psum{display:block!important}body{background:#fff!important}header~nav,nav,.noprint,.bar,.modal{display:none!important}.tab{display:none!important}.tab.printing{display:block!important}header{background:#fff;color:#000}#receipt{display:none}body.rcpt>*:not(#receipt){display:none!important}body.rcpt #receipt{display:block!important}body.cardprint>*:not(#cards){display:none!important}body.cardprint #cards{display:block!important}}
 @media print{.nop{display:none!important}#t-fee:not(.showmob) .mob{display:none!important}}
+@media print{
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body{font-size:11px;background:#fff!important}
+ main{max-width:none!important;padding:0!important;margin:0!important}
+ header{padding:0 0 8px!important;margin-bottom:8px;border-bottom:2px solid #0f766e;background:#fff!important;color:#0f172a!important;gap:10px!important}
+ header img,header .ph{width:44px!important;height:44px!important;font-size:20px!important;background:#fff!important;color:#0f766e!important}
+ header h1{font-size:17px!important;color:#0f766e}header p{font-size:11px!important;opacity:1!important;color:#475569}
+ .sesbox{display:none!important}
+ .psum{font-size:11px;color:#334155;margin:0 0 8px;padding:5px 8px;border-left:3px solid #0f766e;background:#f1f5f9}
+ .cards{grid-template-columns:repeat(5,1fr)!important;gap:6px!important;margin-bottom:8px!important}
+ .stat{padding:5px 8px!important;border:1px solid #cbd5e1!important;border-radius:4px!important;box-shadow:none}
+ .stat small{font-size:10px}.stat b{font-size:13px!important;margin-top:1px!important}
+ .box{border:0!important;padding:0!important;margin:0 0 10px!important;border-radius:0!important}
+ .box h3,.tab h3{font-size:13px!important;margin:8px 0 4px!important;color:#0f766e}
+ .tw{overflow:visible!important}
+ .tab.printing table{width:100%!important;table-layout:auto;border-collapse:collapse;font-size:10.5px}
+ .tab.printing th,td{white-space:normal!important;overflow-wrap:anywhere;word-break:normal;padding:3px 5px!important;border:1px solid #cbd5e1!important;line-height:1.3;vertical-align:middle}
+ .tab.printing th{background:#e6f4f1!important;color:#0f172a!important;text-transform:none!important;font-size:.9em!important;text-align:center!important;font-weight:700}
+ .tab.printing th small{font-weight:400;color:#475569}
+ .tab.printing tr:nth-child(even) td{background:#f8fafc}
+ .tab.printing tr{page-break-inside:avoid;break-inside:avoid}
+ .tab.printing tr.tot td{background:#e6f4f1!important;font-weight:700}
+ .tab.printing .tag{border:1px solid currentColor;padding:0 5px!important;font-size:.9em}
+ .tab.printing small{font-size:.85em}
+}
 </style>
 </head>
 <body>
@@ -499,6 +525,7 @@ function printTab(t){
   $('pp_stw').style.display=m.st?'':'none';$('pp_hw').style.display=m.head?'':'none';
   $('pp_secw').style.display=t==='fee'?'':'none';if(t==='fee'){$('pp_sec_fee').checked=true;$('pp_sec_pay').checked=false;$('pp_mob').checked=false}
   if(m.st)$('pp_st').value=$(m.st).value;
+  {const cols=Math.max(0,...[...$('t-'+t).querySelectorAll('table')].map(x=>x.rows[0]?x.rows[0].cells.length:0));$('pp_ori').value=cols>9?'landscape':'portrait'}
   $('mPrt').classList.add('on')}
 function printHist(){printTab('fee');$('pp_sec_fee').checked=false;$('pp_sec_pay').checked=true}
 function doPrint(){
@@ -514,7 +541,8 @@ function doPrint(){
   const f=[m.cls&&sel(m.cls)?'Class: '+sel(m.cls):'',sel(m.res)?'Result: '+sel(m.res):'',m.st&&sel(m.st)?'Fee: '+sel(m.st):'',headTxt?'Fee heads: '+headTxt:'',
     m.search&&$(m.search).value?'Search: "'+$(m.search).value+'"':'',PT==='fee'&&($('ff_from').value||$('ff_to').value)?'Dates: '+($('ff_from').value||'…')+' → '+($('ff_to').value||'…'):''].filter(Boolean);
   const ps=$('ps-'+PT);ps.innerHTML=$('pp_sum').value==='1'?`<b>${esc(m.title)}</b> • Session ${esc(cur())} • Printed ${today()}<br>Filters: ${f.length?esc(f.join(' • ')):'none'}`:'';
-  const st=document.createElement('style');st.textContent='@page{size:A4 '+$('pp_ori').value+';margin:10mm}';document.head.appendChild(st);
+  const st=document.createElement('style');{const tb=[...$('t-'+PT).querySelectorAll('table')].filter(t=>!t.closest('.nop')&&t.offsetParent!==null);const cols=Math.max(0,...tb.map(t=>(t.rows[0]?t.rows[0].cells.length:0)));const fs=cols>18?7.5:cols>15?8.5:cols>12?9.5:cols>9?10:10.5;
+  st.textContent='@page{size:A4 '+$('pp_ori').value+';margin:10mm}@media print{#t-'+PT+' table{font-size:'+fs+'px}}'}document.head.appendChild(st);
   const el=$('t-'+PT);el.classList.add('printing');if(PT==='fee'&&$('pp_mob').checked)el.classList.add('showmob');
   if(hideFee)$('boxFee').classList.add('nop');if(hidePay)$('boxPay').classList.add('nop');
   window.print();
@@ -1119,81 +1147,33 @@ try{$('gClient').value=localStorage.getItem('sam_gclient')||''}catch(e){}
 #authBox button.go{width:100%;margin-top:18px;padding:11px;border:0;border-radius:8px;background:#0f766e;color:#fff;font-size:15px;cursor:pointer}
 #authBox button.go:hover{background:#115e59}
 #authBox .err{color:#dc2626;font-size:13px;margin-top:10px;min-height:16px;text-align:center}
-#authBox a{color:#0f766e;font-size:13px;cursor:pointer;display:block;text-align:center;margin-top:12px}
-#authBox .rec{background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px;margin-top:12px;font-size:13px;text-align:center}
-#authBox .rec b{display:block;font-size:20px;letter-spacing:2px;margin:6px 0;user-select:all}
-#admModal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px}
-#admModal .card{background:#fff;border-radius:12px;padding:22px;width:100%;max-width:380px}
-#admModal h3{margin:0 0 6px}
-#admModal label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}
-#admModal input{width:100%}
 .authbtns{display:flex;gap:6px;margin-left:auto}
 .authbtns button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:#fff;padding:7px 12px;border-radius:6px;cursor:pointer;font:inherit}
 .authbtns button:hover{background:rgba(255,255,255,.3)}
-@media print{#authBox,#admModal,.authbtns{display:none!important}}
+@media print{#authBox,.authbtns{display:none!important}}
 </style>
-
 <div id="authBox" style="display:none"><div class="card"><h2>🕌 Madrasah Accounts</h2><p class="sub" id="aSub"></p><div id="aBody"></div></div></div>
-
-<div id="admModal"><div class="card">
-  <h3>👤 Admin Panel</h3><p style="margin:0;color:#64748b;font-size:13px">Change admin username or password</p>
-  <label>Current password</label><input type="password" id="mOld" autocomplete="current-password">
-  <label>New username</label><input id="mUser" autocomplete="username">
-  <label>New password (leave empty to keep)</label><input type="password" id="mPass" autocomplete="new-password">
-  <div id="mErr" style="color:#dc2626;font-size:13px;margin-top:8px;min-height:16px"></div>
-  <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="AUTH.saveAdmin()">Save</button><button class="btn gr" onclick="AUTH.closeAdmin()">Cancel</button></div>
-</div></div>
-
 <script>
 const AUTH=(()=>{
-  const K='sam_admin',S='sam_session',L='sam_lock';
-  const $=id=>document.getElementById(id);
-  const get=()=>{try{return JSON.parse(localStorage.getItem(K))}catch(e){return null}};
-  const put=o=>localStorage.setItem(K,JSON.stringify(o));
-  const rnd=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),b=>b.toString(16).padStart(2,'0')).join('');
+  const S='sam_session',L='sam_lock',$=id=>document.getElementById(id);
   async function hash(pw,salt){
-    const data=new TextEncoder().encode(salt+':'+pw);
-    if(crypto.subtle){
-      const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
-      const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:150000,hash:'SHA-256'},k,256);
-      return Array.from(new Uint8Array(b),x=>x.toString(16).padStart(2,'0')).join('');
-    }
-    let h=5381;for(const c of data)h=((h<<5)+h+c)>>>0;return 'f'+h.toString(16);
+    const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+    const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:150000,hash:'SHA-256'},k,256);
+    return Array.from(new Uint8Array(b),x=>x.toString(16).padStart(2,'0')).join('');
   }
-  const recCode=()=>(rnd(8).toUpperCase().match(/.{4}/g)).join('-');
-  function show(){ $('authBox').style.display='flex'; document.body.style.overflow='hidden'; }
-  function hide(){ $('authBox').style.display='none'; document.body.style.overflow=''; addButtons(); }
-  function addButtons(){
-    if(document.querySelector('.authbtns'))return;
-    const d=document.createElement('div');d.className='authbtns noprint';
-    d.innerHTML='<button onclick="AUTH.openAdmin()">👤 Admin</button><button onclick="AUTH.logout()">⏻ Logout</button>';
-    document.querySelector('header').appendChild(d);
-  }
-  function err(m){$('aErr').textContent=m||''}
-  function viewSetup(){
-    $('aSub').textContent='First time setup – create the admin account';
-    $('aBody').innerHTML='<label>Admin username</label><input id="aU" autocomplete="username"><label>Password (min 6 characters)</label><input type="password" id="aP" autocomplete="new-password"><label>Confirm password</label><input type="password" id="aP2" autocomplete="new-password"><div class="err" id="aErr"></div><button class="go" id="aGo">Create admin</button>';
-    $('aGo').onclick=async()=>{
-      const u=$('aU').value.trim(),p=$('aP').value;
-      if(!u)return err('Enter a username');
-      if(p.length<6)return err('Password must be at least 6 characters');
-      if(p!==$('aP2').value)return err('Passwords do not match');
-      const salt=rnd(16),rc=recCode(),rsalt=rnd(16);
-      put({u,salt,h:await hash(p,salt),rsalt,rh:await hash(rc,rsalt)});
-      sessionStorage.setItem(S,'1');
-      $('aSub').textContent='Admin created ✔';
-      $('aBody').innerHTML='<div class="rec">Your <b>recovery code</b> (use it if you forget the password). Write it down now – it is shown only once:<b>'+rc+'</b></div><button class="go" id="aOk">I saved it – Continue</button>';
-      $('aOk').onclick=hide;
-    };
-  }
+  function show(){$('authBox').style.display='flex';document.body.style.overflow='hidden'}
+  function hide(){$('authBox').style.display='none';document.body.style.overflow='';
+    if(!document.querySelector('.authbtns')){const d=document.createElement('div');d.className='authbtns noprint';d.innerHTML='<button onclick="AUTH.logout()">⏻ Logout</button>';document.querySelector('header').appendChild(d)}}
+  const err=m=>{$('aErr').textContent=m||''};
   function viewLogin(){
-    $('aSub').textContent='Admin login';
-    $('aBody').innerHTML='<label>Username</label><input id="aU" autocomplete="username"><label>Password</label><input type="password" id="aP" autocomplete="current-password"><div class="err" id="aErr"></div><button class="go" id="aGo">Login</button><a id="aForgot">Forgot password?</a>';
+    $('aSub').textContent='Admin login – authorised users only';
+    $('aBody').innerHTML='<label>Username</label><input id="aU" autocomplete="username"><label>Password</label><input type="password" id="aP" autocomplete="current-password"><div class="err" id="aErr"></div><button class="go" id="aGo">Login</button>';
     const go=async()=>{
       const lk=+localStorage.getItem(L)||0;
       if(Date.now()<lk)return err('Too many attempts. Wait '+Math.ceil((lk-Date.now())/1000)+' seconds.');
-      const a=get(),u=$('aU').value.trim(),p=$('aP').value;
-      if(a&&u===a.u&&await hash(p,a.salt)===a.h){sessionStorage.setItem(S,'1');localStorage.removeItem(L);sessionStorage.removeItem('sam_try');hide();return}
+      const u=$('aU').value.trim(),p=$('aP').value;let ok=false;
+      try{for(const a of (window.ADMINS||[])){if(a.u===u&&await hash(p,a.salt)===a.h){ok=true;break}}}catch(e){return err('Login needs https or localhost (secure page).')}
+      if(ok){sessionStorage.setItem(S,'1');localStorage.removeItem(L);sessionStorage.setItem('sam_try',0);hide();return}
       const n=(+sessionStorage.getItem('sam_try')||0)+1;sessionStorage.setItem('sam_try',n);
       if(n>=5){localStorage.setItem(L,Date.now()+30000);sessionStorage.setItem('sam_try',0);err('Too many attempts. Wait 30 seconds.')}
       else err('Wrong username or password');
@@ -1201,45 +1181,16 @@ const AUTH=(()=>{
     $('aGo').onclick=go;
     $('aP').addEventListener('keydown',e=>{if(e.key==='Enter')go()});
     $('aU').addEventListener('keydown',e=>{if(e.key==='Enter')$('aP').focus()});
-    $('aForgot').onclick=viewReset;
-  }
-  function viewReset(){
-    $('aSub').textContent='Reset password with recovery code';
-    $('aBody').innerHTML='<label>Recovery code</label><input id="aR" placeholder="XXXX-XXXX-XXXX-XXXX"><label>New password (min 6)</label><input type="password" id="aP" autocomplete="new-password"><div class="err" id="aErr"></div><button class="go" id="aGo">Reset password</button><a id="aBack">← Back to login</a>';
-    $('aBack').onclick=viewLogin;
-    $('aGo').onclick=async()=>{
-      const a=get(),r=$('aR').value.trim().toUpperCase(),p=$('aP').value;
-      if(p.length<6)return err('Password must be at least 6 characters');
-      if(!a||await hash(r,a.rsalt)!==a.rh)return err('Wrong recovery code');
-      const salt=rnd(16),rc=recCode(),rsalt=rnd(16);
-      put({u:a.u,salt,h:await hash(p,salt),rsalt,rh:await hash(rc,rsalt)});
-      sessionStorage.setItem(S,'1');
-      $('aSub').textContent='Password changed ✔';
-      $('aBody').innerHTML='<div class="rec">Your <b>new recovery code</b> – write it down:<b>'+rc+'</b></div><button class="go" id="aOk">Continue</button>';
-      $('aOk').onclick=hide;
-    };
   }
   return{
     init(){
-      if(!get()){show();viewSetup()}
-      else if(sessionStorage.getItem(S)==='1'){hide()}
-      else{show();viewLogin()}
+      if(!(window.ADMINS&&window.ADMINS.length)){show();$('aSub').textContent='';$('aBody').innerHTML='<p style="text-align:center;color:#dc2626">No admin account is configured.<br>Open <b>config.js</b> and add an admin (see admin-setup.html).</p>';return}
+      if(sessionStorage.getItem(S)==='1')hide();else{show();viewLogin()}
     },
-    logout(){sessionStorage.removeItem(S);location.reload()},
-    openAdmin(){const a=get();$('mUser').value=a.u;$('mOld').value='';$('mPass').value='';$('mErr').textContent='';$('admModal').style.display='flex'},
-    closeAdmin(){$('admModal').style.display='none'},
-    async saveAdmin(){
-      const a=get(),u=$('mUser').value.trim(),np=$('mPass').value,e=$('mErr');
-      if(await hash($('mOld').value,a.salt)!==a.h){e.textContent='Current password is wrong';return}
-      if(!u){e.textContent='Username cannot be empty';return}
-      if(np&&np.length<6){e.textContent='New password must be at least 6 characters';return}
-      a.u=u;if(np){a.salt=rnd(16);a.h=await hash(np,a.salt)}
-      put(a);this.closeAdmin();alert('Admin details updated');
-    }
+    logout(){sessionStorage.removeItem(S);location.reload()}
   };
 })();
 AUTH.init();
 </script>
-
 </body>
 </html>
