@@ -2,5 +2,5 @@
 // To change the password or add another admin: open admin-setup.html, type the username + password,
 // copy the line it gives you and paste it inside the list below (one line per admin).
 window.ADMINS = [
-  { u: "admin", salt: "86110cd678c629a155277d1bff351819", h: "43cbe72ef792b95ccda43eceef6c9e4677085975b6feebb106e4beefbdc5c887" }
+  { u: "kam124948office@gmail.com", salt: "b1ae061f8aa7d0596cea13b69dae5259", h: "d380bedc2b78baba130ea8b3649e442d6bb68a33e8f154af1a08b49f0bb2ce63" }
 ];
