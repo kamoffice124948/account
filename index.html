@@ -105,7 +105,7 @@ td.n,th.n{text-align:right}
 .sig{display:flex;justify-content:space-between;margin-top:50px}.sig div{border-top:1px solid #000;padding-top:4px;min-width:160px;text-align:center}
 .sesbox{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px}.sesbox select{font-weight:600}
 @media print{.tw.fixh{max-height:none!important;overflow:visible!important}table th,table td{position:static!important;box-shadow:none!important;max-width:none!important}.psum{display:block!important}body{background:#fff!important}header~nav,nav,.noprint,.bar,.modal{display:none!important}.tab{display:none!important}.tab.printing{display:block!important}header{background:#fff;color:#000}#receipt{display:none}body.rcpt>*:not(#receipt){display:none!important}body.rcpt #receipt{display:block!important}body.cardprint>*:not(#cards){display:none!important}body.cardprint #cards{display:block!important}}
-@media print{.nop{display:none!important}}
+@media print{.nop{display:none!important}#t-fee:not(.showmob) .mob{display:none!important}}
 </style>
 </head>
 <body>
@@ -379,7 +379,7 @@ td.n,th.n{text-align:right}
     <label>Result<select id="pp_res"><option value="">All results</option><option>Pass</option><option>Fail</option><option value="none">Not set</option></select></label>
     <label id="pp_stw">Fee status<select id="pp_st"><option value="">All fee status</option><option value="due">Has due</option><option value="partial">Partly paid</option><option value="unpaid">Nothing paid</option><option value="clear">Fully paid</option></select></label>
     <div id="pp_hw" style="grid-column:1/-1"><div class="hint" style="margin-bottom:4px">Fee heads (খাত) – tick one or more; none ticked = all</div><div class="chk" id="pp_heads"></div></div>
-    <div id="pp_secw" style="grid-column:1/-1;display:none"><div class="hint" style="margin-bottom:4px">What to print (tick only what you want)</div><div class="chk"><label><input type="checkbox" id="pp_sec_fee" checked> Fee status table</label><label><input type="checkbox" id="pp_sec_pay"> Collection history</label></div></div>
+    <div id="pp_secw" style="grid-column:1/-1;display:none"><div class="hint" style="margin-bottom:4px">What to print (tick only what you want)</div><div class="chk"><label><input type="checkbox" id="pp_sec_fee" checked> Fee status table</label><label><input type="checkbox" id="pp_sec_pay"> Collection history</label><label><input type="checkbox" id="pp_mob"> Show mobile number</label></div></div>
     <label>Page<select id="pp_ori"><option value="portrait">A4 Portrait</option><option value="landscape">A4 Landscape (wide tables)</option></select></label>
     <label>Filter summary on page<select id="pp_sum"><option value="1">Show</option><option value="0">Hide</option></select></label>
   </div>
@@ -497,7 +497,7 @@ function printTab(t){
   fillClassSelect($('pp_cls'),true);{const cur=new Set(selHeads());$('pp_heads').innerHTML=heads().map(h=>`<label><input type="checkbox" value="${h.id}" ${cur.has(h.id)?'checked':''}> ${esc(h.name)}</label>`).join('')}
   $('pp_cls').value=$(m.cls).value;$('pp_res').value=$(m.res).value;
   $('pp_stw').style.display=m.st?'':'none';$('pp_hw').style.display=m.head?'':'none';
-  $('pp_secw').style.display=t==='fee'?'':'none';if(t==='fee'){$('pp_sec_fee').checked=true;$('pp_sec_pay').checked=false}
+  $('pp_secw').style.display=t==='fee'?'':'none';if(t==='fee'){$('pp_sec_fee').checked=true;$('pp_sec_pay').checked=false;$('pp_mob').checked=false}
   if(m.st)$('pp_st').value=$(m.st).value;
   $('mPrt').classList.add('on')}
 function printHist(){printTab('fee');$('pp_sec_fee').checked=false;$('pp_sec_pay').checked=true}
@@ -515,10 +515,10 @@ function doPrint(){
     m.search&&$(m.search).value?'Search: "'+$(m.search).value+'"':'',PT==='fee'&&($('ff_from').value||$('ff_to').value)?'Dates: '+($('ff_from').value||'…')+' → '+($('ff_to').value||'…'):''].filter(Boolean);
   const ps=$('ps-'+PT);ps.innerHTML=$('pp_sum').value==='1'?`<b>${esc(m.title)}</b> • Session ${esc(cur())} • Printed ${today()}<br>Filters: ${f.length?esc(f.join(' • ')):'none'}`:'';
   const st=document.createElement('style');st.textContent='@page{size:A4 '+$('pp_ori').value+';margin:10mm}';document.head.appendChild(st);
-  const el=$('t-'+PT);el.classList.add('printing');
+  const el=$('t-'+PT);el.classList.add('printing');if(PT==='fee'&&$('pp_mob').checked)el.classList.add('showmob');
   if(hideFee)$('boxFee').classList.add('nop');if(hidePay)$('boxPay').classList.add('nop');
   window.print();
-  $('boxFee').classList.remove('nop');$('boxPay').classList.remove('nop');el.classList.remove('printing');st.remove();ps.innerHTML=''}
+  $('boxFee').classList.remove('nop');$('boxPay').classList.remove('nop');el.classList.remove('printing');el.classList.remove('showmob');st.remove();ps.innerHTML=''}
 ['dash','stu','fee','res'].forEach(t=>{const d=document.createElement('div');d.className='psum';d.id='ps-'+t;$('t-'+t).prepend(d)});
 
 /* ---- dashboard ---- */
@@ -596,13 +596,13 @@ function renderFee(){
   const inRange=P.reduce((a,p)=>a+(+p.amt||0),0);
   $('feeSum').innerHTML=[['Students shown',L.length],['Fee'+(allH?'':' – '+H.map(h=>h.name).join(', ')),taka(T.f)],['Collected',taka(T.p)],['Due',taka(T.d)],['Collection list total'+((d1||d2)?' (dates)':''),taka(inRange)]]
     .map(([a,b])=>`<div class="stat"><small>${esc(a)}</small><b>${b}</b></div>`).join('');
-  const colSpan=H.length+9;
-  $('feeTbl').innerHTML='<tr><th>Roll</th><th>Name</th><th>Class</th><th>Result</th>'+H.map(h=>`<th class="n">${esc(h.name)}<br><small>paid / fee</small></th>`).join('')+'<th class="n">Fee</th><th class="n">Collected</th><th class="n">Due</th><th>Status</th><th class="noprint"></th></tr>'+
-   (L.map(s=>`<tr><td>${esc(s.roll)}</td><td>${esc(s.name)}${s.nameBn?` <small>(${esc(s.nameBn)})</small>`:''}</td><td>${esc(s.cls)}</td><td>${resTag(s.res)}</td>`+
+  const colSpan=H.length+10;
+  $('feeTbl').innerHTML='<tr><th>Roll</th><th>Name</th><th>Class</th><th class="mob">Mobile</th><th>Result</th>'+H.map(h=>`<th class="n">${esc(h.name)}<br><small>paid / fee</small></th>`).join('')+'<th class="n">Fee</th><th class="n">Collected</th><th class="n">Due</th><th>Status</th><th class="noprint"></th></tr>'+
+   (L.map(s=>`<tr><td>${esc(s.roll)}</td><td>${esc(s.name)}${s.nameBn?` <small>(${esc(s.nameBn)})</small>`:''}</td><td>${esc(s.cls)}</td><td class="mob">${esc(s.phone||'')}</td><td>${resTag(s.res)}</td>`+
    H.map(h=>{const f=feeHead(s,h),p=paidHead(s,h.id);return`<td class="n ${p<f?'due':'ok'}">${p.toLocaleString('en-IN')} / ${f.toLocaleString('en-IN')}</td>`}).join('')+
    `<td class="n">${taka(fe(s))}</td><td class="n ok">${taka(pd(s))}</td><td class="n ${du(s)?'due':'ok'}">${taka(du(s))}</td>
    <td>${{clear:'<span class="tag pass">Clear</span>',partial:'<span class="tag" style="background:#fef3c7;color:#92400e">Partly paid</span>',unpaid:'<span class="tag fail">Due</span>'}[status(s)]}</td><td class="noprint"><button class="btn s bl" onclick="openPay('${s.id}')">Collect</button></td></tr>`).join('')
-   +(L.length?`<tr class="tot" style="font-weight:700;background:#f8fafc"><td colspan="${4+H.length}">Total (${L.length} students)</td><td class="n">${taka(T.f)}</td><td class="n ok">${taka(T.p)}</td><td class="n due">${taka(T.d)}</td><td colspan="2"></td></tr>`:'<tr><td colspan="'+colSpan+'" class="hint">No students match the filters</td></tr>'));
+   +(L.length?`<tr class="tot" style="font-weight:700;background:#f8fafc"><td colspan="${5+H.length}">Total (${L.length} students)</td><td class="n">${taka(T.f)}</td><td class="n ok">${taka(T.p)}</td><td class="n due">${taka(T.d)}</td><td colspan="2"></td></tr>`:'<tr><td colspan="'+colSpan+'" class="hint">No students match the filters</td></tr>'));
   $('payTbl').innerHTML='<tr><th>Rcpt #</th><th>Date</th><th>Student</th><th>Class</th><th>Fee head</th><th class="n">Amount</th><th>Note</th><th class="noprint"></th></tr>'+
    (P.map(p=>`<tr><td>${esc(p.no||'')}</td><td>${esc(p.date)}</td><td>${esc(p.s.name)} (${esc(p.s.roll)})</td><td>${esc(p.s.cls)}</td><td>${esc(headName(p.head))}</td><td class="n ok">${taka(p.amt)}</td><td>${esc(p.note)}</td>
    <td class="noprint"><button class="btn s bl" onclick="printReceipt('${p.s.id}','${p.id}')">🧾 Receipt</button> <button class="btn s am" onclick="openPay('${p.s.id}','${p.id}')">Edit</button> <button class="btn s rd" onclick="delPay('${p.s.id}','${p.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="8" class="hint">No collections match</td></tr>')
