@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Account Management</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f766e">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{--g:#0f766e;--g2:#115e59;--bg:#f1f5f4;--card:#fff;--tx:#1e293b;--mu:#64748b;--bd:#e2e8f0;--red:#dc2626;--grn:#16a34a;--amb:#d97706}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI","Noto Sans Bengali","Kalpurush",Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+header{background:linear-gradient(135deg,var(--g),var(--g2));color:#fff;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:50%;padding:3px}
+header .ph{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:28px}
+header h1{margin:0;font-size:22px}
+header p{margin:2px 0 0;opacity:.9;font-size:13px}
+nav{display:flex;gap:4px;background:#fff;padding:0 12px;border-bottom:1px solid var(--bd);overflow-x:auto;position:sticky;top:0;z-index:5}
+nav button{border:0;background:none;padding:13px 16px;cursor:pointer;font-size:14px;color:var(--mu);border-bottom:3px solid transparent;white-space:nowrap}
+nav button.on{color:var(--g);border-color:var(--g);font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:18px}
+.tab{display:none}.tab.on{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border-radius:10px;padding:14px;border:1px solid var(--bd)}
+.stat small{color:var(--mu)}.stat b{display:block;font-size:22px;margin-top:4px}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:16px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+input,select,textarea{padding:8px 10px;border:1px solid var(--bd);border-radius:6px;font:inherit;background:#fff;max-width:100%}
+input:focus,select:focus{outline:2px solid #99f6e4}
+.btn{padding:8px 14px;border:0;border-radius:6px;cursor:pointer;background:var(--g);color:#fff;font:inherit}
+.btn:hover{background:var(--g2)}
+.btn.s{padding:4px 9px;font-size:12px}
+.btn.gr{background:#e2e8f0;color:var(--tx)}.btn.rd{background:var(--red)}.btn.am{background:var(--amb)}.btn.bl{background:#2563eb}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{padding:9px 10px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{background:#f8fafc;font-size:12px;text-transform:uppercase;color:var(--mu)}
+td.n,th.n{text-align:right}
+.tag{padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600}
+.pass{background:#dcfce7;color:#166534}.fail{background:#fee2e2;color:#991b1b}.none{background:#f1f5f9;color:var(--mu)}
+.due{color:var(--red);font-weight:600}.ok{color:var(--grn);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.grid label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mu)}
+.grid input,.grid select{color:var(--tx);font-size:14px}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:20}
+.modal.on{display:flex}
+.mb{background:#fff;border-radius:12px;padding:20px;width:100%;max-width:620px}
+.mb h3{margin-top:0}
+.row{display:flex;gap:8px;margin-bottom:8px}.row input{flex:1}
+.hint{color:var(--mu);font-size:12px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:8px;display:none;z-index:50}
+.logo-prev{width:110px;height:110px;border:2px dashed var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--mu)}
+.logo-prev img{max-width:100%;max-height:100%}
+@page{size:A4;margin:10mm}
+.psum{display:none;margin:0 0 10px;font-size:13px;border-bottom:1px solid #000;padding-bottom:6px}
+#cards{display:none}
+.rcard{box-sizing:border-box;width:100%;min-height:270mm;padding:10mm;border:3px double #000;color:#000;font-size:14px;page-break-after:always;break-after:page;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rcard:last-child{page-break-after:auto;break-after:auto}
+.rcard .rch{display:flex;align-items:center;gap:16px;justify-content:center;text-align:center;border-bottom:2px solid #000;padding-bottom:10px}
+.rcard .rch img{width:80px;height:80px;object-fit:contain}.rcard .rch h2{margin:0;font-size:26px}
+.rcard h3{text-align:center;margin:14px 0 10px;font-size:18px;letter-spacing:.5px;text-transform:uppercase;border:1.5px solid #000;padding:6px}
+.rcard table{width:100%;border-collapse:collapse;margin:8px 0}
+.rcard td,.rcard th{border:1px solid #333;padding:7px 10px;text-align:left;white-space:normal;font-size:14px}
+.rcard th{background:#e5e5e5;text-transform:none;color:#000}
+.rcard td.k{width:22%;font-weight:600;background:#f3f3f3}.rcard td.n,.rcard th.n{text-align:right}
+.rcard .res{text-align:center;font-size:30px;font-weight:800;letter-spacing:4px;padding:14px;border:3px solid #000;margin:14px 0}
+.rcard .res.p{background:#d9f2e0}.rcard .res.f{background:#f8d7d7}.rcard .res.x{background:#eee;font-size:20px}
+.rcard .sig{position:absolute;left:10mm;right:10mm;bottom:12mm;display:flex;justify-content:space-between}
+.rcard .foot{position:absolute;left:10mm;right:10mm;bottom:5mm;text-align:center;font-size:11px;color:#444}
+.dd{position:relative}.dd summary{padding:8px 10px;border:1px solid var(--bd);border-radius:6px;background:#fff;cursor:pointer;list-style:none;white-space:nowrap}
+.dd summary::after{content:' ▾'}
+.ddb{position:absolute;z-index:8;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:8px;min-width:260px;box-shadow:0 6px 20px rgba(0,0,0,.18);max-height:300px;overflow:auto}
+.ddb label,.chk label{display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:14px;color:var(--tx)}
+.chk{border:1px solid var(--bd);border-radius:6px;padding:4px 8px;max-height:150px;overflow:auto;background:#fff}
+/* sticky header + sticky first columns */
+.tw.fixh{max-height:72vh;overflow:auto;padding:0}
+.tw.fixh>h3{margin:0!important;padding:14px 16px 8px;position:sticky;left:0;background:#fff;z-index:6}
+.tw.fixh>table{border-radius:10px}
+.tw.fixh th{position:sticky;top:0;z-index:3}
+#stuTbl tr>:not([colspan]):nth-child(-n+3),#feeTbl tr:not(.tot)>:not([colspan]):nth-child(-n+2),#payTbl tr:not(.tot)>:not([colspan]):nth-child(-n+3){position:sticky;background:#fff;z-index:2}
+#stuTbl tr>th:nth-child(-n+3),#feeTbl tr>th:nth-child(-n+2),#payTbl tr>th:nth-child(-n+3){background:#f8fafc!important;z-index:6!important}
+#stuTbl tr>:not([colspan]):nth-child(1){left:0;min-width:44px;max-width:44px}
+#stuTbl tr>:not([colspan]):nth-child(2){left:44px;min-width:64px;max-width:64px}
+#stuTbl tr>:not([colspan]):nth-child(3){left:108px;min-width:190px;box-shadow:3px 0 4px -2px rgba(0,0,0,.18)}
+#feeTbl tr:not(.tot)>:not([colspan]):nth-child(1){left:0;min-width:64px;max-width:64px}
+#feeTbl tr:not(.tot)>:not([colspan]):nth-child(2){left:64px;min-width:190px;box-shadow:3px 0 4px -2px rgba(0,0,0,.18)}
+#payTbl tr:not(.tot)>:not([colspan]):nth-child(1){left:0;min-width:60px;max-width:60px}
+#payTbl tr:not(.tot)>:not([colspan]):nth-child(2){left:60px;min-width:100px;max-width:100px}
+#payTbl tr:not(.tot)>:not([colspan]):nth-child(3){left:160px;min-width:170px;box-shadow:3px 0 4px -2px rgba(0,0,0,.18)}
+@media (max-width:700px){#stuTbl tr>:not([colspan]):nth-child(-n+2),#payTbl tr>:not([colspan]):nth-child(-n+2){position:static}#stuTbl tr>:not([colspan]):nth-child(3){left:0}#payTbl tr:not(.tot)>:not([colspan]):nth-child(3){left:0}}
+#resTbl tr>:not([colspan]):nth-child(-n+3){position:sticky;background:#fff;z-index:2}
+#resTbl tr>th:nth-child(-n+3){background:#f8fafc!important;z-index:6!important}
+#resTbl tr>:not([colspan]):nth-child(1){left:0;min-width:40px;max-width:40px;text-align:center}
+#resTbl tr>:not([colspan]):nth-child(2){left:40px;min-width:64px;max-width:64px}
+#resTbl tr>:not([colspan]):nth-child(3){left:104px;min-width:190px;box-shadow:3px 0 4px -2px rgba(0,0,0,.18)}
+#resTbl tr.sel>td{background:#ecfeff!important}
+#resTbl input[type=checkbox]{width:17px;height:17px;cursor:pointer}
+#receipt{display:none}
+.rc{max-width:720px;margin:0 auto;padding:18px;border:2px solid #000;color:#000;font-size:14px}
+.rch{display:flex;align-items:center;gap:14px;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:10px}
+.rch img{width:70px;height:70px;object-fit:contain}.rch h2{margin:0;font-size:22px}
+.rt{width:100%;border-collapse:collapse;margin:10px 0}.rt td{border:1px solid #444;padding:7px 10px;white-space:normal}.rt td:first-child{width:34%;font-weight:600;background:#f3f3f3}
+.sig{display:flex;justify-content:space-between;margin-top:50px}.sig div{border-top:1px solid #000;padding-top:4px;min-width:160px;text-align:center}
+.sesbox{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px}.sesbox select{font-weight:600}
+@media print{.tw.fixh{max-height:none!important;overflow:visible!important}table th,table td{position:static!important;box-shadow:none!important;max-width:none!important}.psum{display:block!important}body{background:#fff!important}header~nav,nav,.noprint,.bar,.modal{display:none!important}.tab{display:none!important}.tab.printing{display:block!important}header{background:#fff;color:#000}#receipt{display:none}body.rcpt>*:not(#receipt){display:none!important}body.rcpt #receipt{display:block!important}body.cardprint>*:not(#cards){display:none!important}body.cardprint #cards{display:block!important}}
+</style>
+</head>
+<body>
+<header>
+  <div id="hLogo"></div>
+  <div><h1 id="hName"></h1><p id="hAddr"></p></div>
+  <div class="sesbox noprint"><label for="sesSel">📅 Session</label><select id="sesSel" onchange="setSession(this.value)"></select></div>
+</header>
+<div id="receipt"></div>
+<div id="cards"></div>
+<nav id="nav">
+  <button data-t="dash" class="on">📊 Dashboard</button>
+  <button data-t="stu">👨‍🎓 Students</button>
+  <button data-t="fee">💰 Fee &amp; Collection</button>
+  <button data-t="res">📝 Results</button>
+  <button data-t="imp">📥 Import / Export</button>
+  <button data-t="set">⚙️ Madrasah Settings</button>
+</nav>
+<div id="bkBar" class="noprint" style="display:none;background:#fef3c7;color:#92400e;padding:8px 18px;font-size:13px"></div>
+<main>
+
+<!-- DASHBOARD -->
+<section class="tab on" id="t-dash">
+  <div class="bar noprint">
+    <select id="dc" onchange="renderDash()"></select>
+    <select id="dr" onchange="renderDash()"><option value="">All results</option><option>Pass</option><option>Fail</option><option value="none">Not set</option></select>
+    <button class="btn gr" onclick="printTab('dash')">🖨 Print…</button>
+  </div>
+  <div class="cards" id="stats"></div>
+  <div class="box"><h3 style="margin-top:0">Fee head-wise summary</h3><div class="tw"><table id="headTbl"></table></div></div>
+  <div class="box"><h3 style="margin-top:0">Class-wise summary</h3><div class="tw"><table id="classTbl"></table></div></div>
+</section>
+
+<!-- STUDENTS -->
+<section class="tab" id="t-stu">
+  <div class="bar noprint">
+    <input id="q" placeholder="🔍 Search name / roll / phone…" oninput="renderStudents()" style="flex:1;min-width:200px">
+    <select id="fc" onchange="renderStudents()"></select>
+    <select id="fr" onchange="renderStudents()"><option value="">All results</option><option>Pass</option><option>Fail</option><option value="none">Not set</option></select>
+    <select id="fd" onchange="renderStudents()"><option value="">All fee status</option><option value="due">Has due</option><option value="partial">Partly paid</option><option value="unpaid">Nothing paid</option><option value="clear">Fully paid</option></select>
+    <button class="btn" onclick="openStu()">➕ Add Student</button>
+    <button class="btn gr" onclick="printTab('stu')">🖨 Print…</button>
+    <button class="btn bl" onclick="openPromote()">⏭ Promote shown → session</button>
+    <select id="bulkCls"></select><button class="btn am" onclick="bulkClass()">Move shown → class</button>
+    <select id="bulkHead"></select><input id="bulkFee" type="number" min="0" placeholder="Fee ৳" style="width:90px"><button class="btn am" onclick="bulkFee()">Set head fee for shown</button>
+  </div>
+  <div class="box tw fixh"><table id="stuTbl"></table></div>
+</section>
+
+<!-- FEE -->
+<section class="tab" id="t-fee">
+  <div class="bar noprint">
+    <input id="fq" placeholder="🔍 Search student…" oninput="renderFee()" style="flex:1;min-width:200px">
+    <button class="btn" onclick="openPay()">💵 New Collection</button>
+    <button class="btn gr" onclick="quickHead()">➕ New fee head</button>
+    <button class="btn gr" onclick="printTab('fee')">🖨 Print…</button>
+  </div>
+  <div class="bar noprint">
+    <select id="ff_cls" onchange="renderFee()"></select>
+    <details class="dd" id="ffHeads"><summary id="ffHeadSum">All fee heads</summary><div class="ddb" id="ffHeadBox"></div></details>
+    <select id="ff_res" onchange="renderFee()"><option value="">All results</option><option>Pass</option><option>Fail</option><option value="none">Not set</option></select>
+    <select id="ff_st" onchange="renderFee()"><option value="">All status</option><option value="due">Has due</option><option value="partial">Partly paid</option><option value="unpaid">Nothing paid</option><option value="clear">Fully paid</option></select>
+    <label class="hint">Collected from <input type="date" id="ff_from" onchange="renderFee()"></label>
+    <label class="hint">to <input type="date" id="ff_to" onchange="renderFee()"></label>
+    <button class="btn gr" onclick="resetFeeFilter()">✖ Reset filters</button>
+  </div>
+  <div class="cards" id="feeSum"></div>
+  <div class="box tw fixh"><h3 style="margin-top:0">Fee status</h3><table id="feeTbl"></table></div>
+  <div class="box tw fixh"><h3 style="margin-top:0">Collection history</h3><table id="payTbl"></table></div>
+</section>
+
+<!-- RESULT -->
+<section class="tab" id="t-res">
+  <div class="bar noprint">
+    <input id="rq" placeholder="🔍 Search student…" oninput="renderRes()" style="flex:1;min-width:200px">
+    <select id="rc" onchange="renderRes()"></select>
+    <select id="rf" onchange="renderRes()"><option value="">All results</option><option>Pass</option><option>Fail</option><option value="none">Not set</option></select>
+    <select id="rd" onchange="renderRes()"><option value="">All fee status</option><option value="due">Has due</option><option value="partial">Partly paid</option><option value="unpaid">Nothing paid</option><option value="clear">Fully paid</option></select>
+    <button class="btn bl" onclick="bulkRes('Pass')">All shown → Pass</button>
+    <button class="btn" onclick="openResImport()">📥 Import results (Excel/CSV)</button>
+    <button class="btn am" onclick="printCards()">🖨 Report cards A4 (all shown)</button>
+    <button class="btn gr" onclick="printTab('res')">🖨 Print…</button>
+  </div>
+  <div class="bar noprint" id="resBulk" style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:8px 12px">
+    <b id="selCnt">0 selected</b>
+    <button class="btn s gr" onclick="selShown(true)">☑ Select all shown</button>
+    <button class="btn s gr" onclick="selShown(false)">☐ Clear selection</button>
+    <span class="hint">Set selected →</span>
+    <button class="btn s" style="background:#16a34a" onclick="bulkSel('Pass')">✔ Pass</button>
+    <button class="btn s rd" onclick="bulkSel('Fail')">✘ Fail</button>
+    <button class="btn s gr" onclick="bulkSel('')">Clear result</button>
+    <input id="bulkRem" placeholder="Remark for selected" style="width:200px"><button class="btn s am" onclick="bulkRemark()">Set remark</button>
+    <span class="hint">Tip: Shift + click selects a range.</span>
+  </div>
+  <div class="box tw fixh"><table id="resTbl"></table></div>
+</section>
+
+<!-- IMPORT -->
+<section class="tab" id="t-imp">
+  <div class="box">
+    <h3 style="margin-top:0">Import student info from Excel (.xlsx) / CSV</h3>
+    <p class="hint">The header row is found automatically (blank rows above it are skipped). Recognised columns: <b>Roll, Roll Privi (previous roll), TOT, Student Name (English / Bangla), Father (English / Bangla), Mother, DOB, Address, Contact</b> and also <b>Class, Fee, Paid, Result, Remark</b> if present. Only a name is required. "Fee" and "Paid" apply to the first fee head. Result = Pass / Fail.</p>
+    <div class="bar">
+      <label class="hint">Class for rows without a Class column<br><select id="impCls"></select></label>
+      
+    </div>
+    <div class="bar">
+      <input type="file" id="file" accept=".xlsx,.csv">
+      <select id="impMode"><option value="add">Add to existing (update if same Roll+Class)</option><option value="replace">Replace all students</option></select>
+      <button class="btn" onclick="doImport()">📥 Import</button>
+      <button class="btn gr" onclick="downloadTemplate()">⬇ Download template</button>
+      <button class="btn bl" onclick="loadSeed()">📋 Load built-in list (87 students)</button>
+    </div>
+    <div id="impPrev" class="tw"></div>
+  </div>
+  <div class="box">
+    <h3 style="margin-top:0">Export / Backup</h3>
+    <div class="bar">
+      <button class="btn" onclick="exportXlsx()">📤 Export Excel</button>
+      <button class="btn gr" onclick="exportCsv()">📤 Export CSV</button>
+      <button class="btn gr" onclick="backup()">💾 Backup (JSON)</button>
+      <label class="btn gr" style="margin:0">♻ Restore backup<input type="file" accept=".json" onchange="restore(event)" hidden></label>
+      <button class="btn rd" onclick="wipe()">🗑 Delete all data</button>
+    </div>
+  </div>
+  <div class="box" id="bkBox">
+    <h3 style="margin-top:0">☁ Backup &amp; sync</h3>
+    <p class="hint" id="bkLast"></p>
+    <h4 style="margin:14px 0 4px">1. Auto-backup folder <span class="hint">(recommended – no internet needed)</span></h4>
+    <p class="hint">Choose a folder once. After that, every change is saved there automatically (one "latest" file + one file per day). If the folder is inside <b>Google Drive for desktop</b> (or OneDrive / Dropbox), Google uploads it to your account by itself. Works in Chrome / Edge and in the desktop app.</p>
+    <div class="bar">
+      <button class="btn" onclick="chooseBackup()">📁 Choose backup folder</button>
+      <button class="btn gr" onclick="perm(true)">🔓 Re-allow access</button>
+      <button class="btn gr" onclick="writeBackup(true)">Backup now</button>
+      <button class="btn s rd" onclick="clearBackup()">Stop</button>
+      <span id="bkFolder" class="hint"></span>
+    </div>
+    <h4 style="margin:14px 0 4px">2. Direct Google Drive <span class="hint">(needs a Google Client ID)</span></h4>
+    <p class="hint">Google only allows sign-in from a web address, so open this app from <b>http://localhost</b> or an <b>https</b> site (not by double-clicking the file). Create an OAuth "Web application" Client ID in Google Cloud Console, enable the Google Drive API, add your address under Authorized JavaScript origins, and paste the ID below. One file, <i>madrasah-accounts-backup.json</i>, is kept in the Drive of the account you sign in with.</p>
+    <div class="bar">
+      <input id="gClient" placeholder="xxxxxxxx.apps.googleusercontent.com" style="min-width:300px;flex:1">
+      <button class="btn bl" onclick="driveBackup()">☁ Backup to Drive</button>
+      <button class="btn gr" onclick="driveRestore()">☁ Restore from Drive</button>
+    </div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="tab" id="t-set">
+  <div class="box">
+    <h3 style="margin-top:0">Madrasah identity</h3>
+    <div class="bar" style="align-items:flex-start;gap:20px">
+      <div>
+        <div class="logo-prev" id="logoPrev">No logo</div>
+        <div class="bar" style="margin-top:8px">
+          <label class="btn s">Upload<input type="file" accept="image/*" id="logoFile" hidden></label>
+          <button class="btn s rd" onclick="removeLogo()">Remove</button>
+        </div>
+      </div>
+      <div style="flex:1;min-width:260px">
+        <div class="grid">
+          <label>Madrasah name<input id="sName"></label>
+          <label>EIIN / Code<input id="sEiin"></label>
+          <label>Phone<input id="sPhone"></label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box">
+    <h3 style="margin-top:0">Address (fully dynamic)</h3>
+    <p class="hint">Add, edit or delete any address line (Village, Post Office, Upazila, District…). Lines are joined with commas in the header.</p>
+    <div id="addrList"></div>
+    <div class="bar">
+      <button class="btn gr" onclick="addAddr()">➕ Add line</button>
+      <button class="btn" onclick="saveSettings()">💾 Save settings</button>
+    </div>
+  </div>
+  <div class="box">
+    <h3 style="margin-top:0">Sessions (dynamic)</h3>
+    <p class="hint">Each student record belongs to one session. Switch the session from the top-right selector. Use <b>Promote</b> on the Students tab to copy students into a new session (fees and results start fresh; old session records stay).</p>
+    <div id="sesList"></div>
+    <div class="bar">
+      <button class="btn gr" onclick="addSession()">➕ Add session</button>
+    </div>
+  </div>
+  <div class="box">
+    <h3 style="margin-top:0">Fee heads / খাত (dynamic)</h3>
+    <p class="hint">Add any number of fee heads (tuition, exam, admission, library…). The amount is the default per student; you can override it for one student in Edit. Collections are recorded against a head.</p>
+    <div id="headList"></div>
+    <div class="bar">
+      <button class="btn gr" onclick="addHead()">➕ Add fee head</button>
+      <button class="btn" onclick="saveSettings()">💾 Save fee heads</button>
+    </div>
+  </div>
+  <div class="box">
+    <h3 style="margin-top:0">Class list (dynamic)</h3>
+    <div id="clsList"></div>
+    <div class="bar">
+      <button class="btn gr" onclick="addCls()">➕ Add class</button>
+      <button class="btn" onclick="saveSettings()">💾 Save settings</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- Student modal -->
+<div class="modal" id="mStu"><div class="mb">
+  <h3 id="mStuT">Add Student</h3>
+  <div class="grid">
+    <label>Roll<input id="f_roll"></label>
+    <label>Name (English) *<input id="f_name"></label>
+    <label>Name (Bangla)<input id="f_nameBn"></label>
+    <label>Previous roll<input id="f_prevRoll"></label>
+    <label>TOT<input id="f_tot"></label>
+    <label>Father (English)<input id="f_father"></label>
+    <label>Father (Bangla)<input id="f_fatherBn"></label>
+    <label>Mother's name<input id="f_mother"></label>
+    <label>Date of birth<input id="f_dob"></label>
+    <label>Class<select id="f_cls"></select></label>
+    <label>Phone<input id="f_phone"></label>
+    <label>Address<input id="f_addr"></label>
+    
+    <label>Result<select id="f_res"><option value="">Not set</option><option>Pass</option><option>Fail</option></select></label>
+    <label>Remark<input id="f_rem"></label>
+    <div style="grid-column:1/-1"><div class="hint" style="margin-bottom:6px"><b>Fee heads (খাত)</b> – leave blank to use the default amount</div><div class="grid" id="f_heads"></div></div>
+  </div>
+  <div class="bar" style="margin-top:14px;justify-content:flex-end">
+    <button class="btn gr" onclick="closeM('mStu')">Cancel</button>
+    <button class="btn" onclick="saveStu()">💾 Save</button>
+  </div>
+</div></div>
+
+<!-- Pay modal -->
+<div class="modal" id="mPay"><div class="mb">
+  <h3 id="mPayT">Fee Collection</h3>
+  <div class="grid">
+    <label style="grid-column:1/-1">Student<select id="p_stu" onchange="payInfo()"></select></label>
+    <label>Fee head (খাত)<span style="display:flex;gap:6px"><select id="p_head" onchange="payInfo()" style="flex:1;min-width:0"></select><button type="button" class="btn s gr" onclick="quickHead()" title="Add a new fee head">➕ New</button></span></label>
+    <label>Amount (৳)<input id="p_amt" type="number" min="0"></label>
+    <label>Date<input id="p_date" type="date"></label>
+    <label style="grid-column:1/-1">Note<input id="p_note" placeholder="e.g. January month, receipt no."></label>
+  </div>
+  <p id="p_info" class="hint"></p>
+  <div class="bar" style="justify-content:flex-end">
+    <button class="btn gr" onclick="closeM('mPay')">Cancel</button>
+    <button class="btn" onclick="savePay()">💾 Save</button>
+  </div>
+</div></div>
+
+<div class="modal" id="mPro"><div class="mb">
+  <h3>Promote / copy students to another session</h3>
+  <p class="hint" id="pr_info"></p>
+  <div class="grid">
+    <label>Target session (existing)<select id="pr_ses"></select></label>
+    <label>…or new session name<input id="pr_new" placeholder="e.g. 2026-2027"></label>
+    <label>Class in new session<select id="pr_cls"></select></label>
+  </div>
+  <div class="bar" style="margin-top:14px;justify-content:flex-end">
+    <button class="btn gr" onclick="closeM('mPro')">Cancel</button>
+    <button class="btn" onclick="doPromote()">⏭ Copy students</button>
+  </div>
+</div></div>
+
+<div class="modal" id="mPrt"><div class="mb">
+  <h3>🖨 Print options (A4)</h3>
+  <p class="hint" id="pp_t"></p>
+  <div class="grid">
+    <label>Class<select id="pp_cls"></select></label>
+    <label>Result<select id="pp_res"><option value="">All results</option><option>Pass</option><option>Fail</option><option value="none">Not set</option></select></label>
+    <label id="pp_stw">Fee status<select id="pp_st"><option value="">All fee status</option><option value="due">Has due</option><option value="partial">Partly paid</option><option value="unpaid">Nothing paid</option><option value="clear">Fully paid</option></select></label>
+    <div id="pp_hw" style="grid-column:1/-1"><div class="hint" style="margin-bottom:4px">Fee heads (খাত) – tick one or more; none ticked = all</div><div class="chk" id="pp_heads"></div></div>
+    <label>Page<select id="pp_ori"><option value="portrait">A4 Portrait</option><option value="landscape">A4 Landscape (wide tables)</option></select></label>
+    <label>Filter summary on page<select id="pp_sum"><option value="1">Show</option><option value="0">Hide</option></select></label>
+  </div>
+  <div class="bar" style="margin-top:14px;justify-content:flex-end">
+    <button class="btn gr" onclick="closeM('mPrt')">Cancel</button>
+    <button class="btn" onclick="doPrint()">🖨 Print</button>
+  </div>
+</div></div>
+
+<div class="modal" id="mRI"><div class="mb" style="max-width:860px">
+  <h3>📥 Import results from Excel / CSV</h3>
+  <p class="hint">Header row needed. Columns: <b>Roll</b> (and <b>Class</b> if the same roll exists in several classes) <i>or</i> the student <b>Name</b>; plus <b>Result</b> (Pass / Fail / পাস / ফেল) and optional <b>Remark</b>. Matches students of the current session. Rows without a Result keep the old result.</p>
+  <div class="bar"><input type="file" id="riFile" accept=".xlsx,.csv"><button class="btn gr" onclick="downloadResTemplate()">⬇ Sheet with current students (fill &amp; re-import)</button></div>
+  <div id="riPrev" class="tw" style="max-height:340px;overflow:auto"></div>
+  <div class="bar" style="margin-top:12px;justify-content:flex-end"><button class="btn gr" onclick="closeM('mRI')">Cancel</button><button class="btn" id="riGo" onclick="applyResImport()" disabled>✔ Apply</button></div>
+</div></div>
+
+<div class="modal" id="mAsk"><div class="mb" style="max-width:420px"><h3 id="askT" style="font-size:16px"></h3><input id="askI" style="width:100%"><div class="bar" style="margin-top:12px;justify-content:flex-end"><button class="btn gr" onclick="askDone(null)">Cancel</button><button class="btn" onclick="askDone($('askI').value)">OK</button></div></div></div>
+
+<div id="toast"></div>
+
+<script>
+const KEY='sam_v1';
+const DESK=window.desktop||null;   /* set by the Electron desktop app */
+const BK={handle:null,dir:null,ok:false,timer:null};
+/* Built-in student list (from Acount.xlsx) */
+const SEED=[{"roll":"1","prevRoll":"3","tot":"38","name":"Md Ali Hasan","nameBn":"মোঃ আলী হাসান","father":"Md Rabeul Islam","fatherBn":"মোঃ রবিউল ইসলাম","mother":"Mst Ferdousi Begum","dob":"2010-01-03","addr":"পশ্চিম খুটামারা মাঝাপাড়া","phone":"01310354419"},{"roll":"2","prevRoll":"1","tot":"36","name":"Md Sakib Islam","nameBn":"মোঃ সাকিব ইসলাম","father":"Md Ohidul Islam","fatherBn":"মোঃ অহিদুল ইসলাম","mother":"Mst Khayron Begum","dob":"2007-09-24","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"192922902"},{"roll":"3","prevRoll":"6","tot":"1","name":"Mst Lima Akter","nameBn":"মোছাঃ লিমা আক্তার","father":"Md Arshad","fatherBn":"মোঃ এরশাদ","mother":"Mst Latifa Begum","dob":"2012-01-15","addr":"পশ্চিম খুটামারা ঘোনপাড়া","phone":"01792851285"},{"roll":"4","prevRoll":"71","tot":"66","name":"Md Abdul Oyares","nameBn":"মোঃ আব্দুল ওয়ারেজ","father":"Md Afzalul Hoque","fatherBn":"মোঃ আফজালুল হক","mother":"Hafeza Begum","dob":"2010-09-20","addr":"পশ্চিম খুটামারা দোলারবাড়ি","phone":"01750824674"},{"roll":"5","prevRoll":"8","tot":"29","name":"Mst Asfiya Akter","nameBn":"মোছাঃ আশফিয়া আক্তার","father":"Md Asraf Ali","fatherBn":"মোঃ আশরাফ আলী","mother":"Mst Monjila Begum","dob":"2010-12-20","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01776809398"},{"roll":"6","prevRoll":"9","tot":"33","name":"Mst Sumaiya Akter Riya Moni","nameBn":"মোছাঃ সুমাইয়া আক্তার রিয়া মনি","father":"Md Sayid Ali","fatherBn":"মোঃ সায়িদ আলী","mother":"Mst Habiba Begum","dob":"2012-10-02","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01755324363"},{"roll":"7","prevRoll":"21","tot":"44","name":"Md Abdullah Haque","nameBn":"মোঃ আব্দুল্লাহ হক","father":"Md Rafiq Uddin","fatherBn":"মোঃ রফিক উদ্দিন","mother":"Mst Parul Begum","dob":"2012-08-20","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01922897311"},{"roll":"8","prevRoll":"87","tot":"97","name":"Most Bristi Akter","nameBn":"মোছাঃ বৃষ্টি আক্তার","father":"Md Ataur Rahman","fatherBn":"মোঃ আতাউর রহমান","mother":"Mst Karima Akter","dob":"2009-06-30","addr":"","phone":""},{"roll":"9","prevRoll":"4","tot":"40","name":"Md Samiul Islam","nameBn":"মোঃ সামিউল ইসলাম","father":"Md MosfiqurRahman","fatherBn":"মোঃ মুসফিকুর রহমান","mother":"Mst Moniga Begum","dob":"2009-02-14","addr":"পশ্চিম খুটামারা শাহীপাড়া","phone":"01760621766"},{"roll":"10","prevRoll":"15","tot":"3","name":"Mst Sumaiya Akter","nameBn":"মোছাঃ সুমাইয়া আক্তার","father":"Md Moshiar Rahman","fatherBn":"মোঃ মশিউর রহমান","mother":"Nilufa Akter","dob":"","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01737561080"},{"roll":"11","prevRoll":"2","tot":"37","name":"Mehedi Hasan","nameBn":"মেহেদী হাসান","father":"Md Dulal Hossen","fatherBn":"মোঃ দুলাল হোসেন","mother":"Mst Mazeda Begum","dob":"2010-06-11","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01774121269"},{"roll":"12","prevRoll":"32","tot":"68","name":"Md Rakibul Islam","nameBn":"মোঃ রাকিবুল ইসলাম","father":"Md Ohidul Islam","fatherBn":"মোঃ অহিদুল ইসলাম","mother":"Mst Khoyron Begum","dob":"2007-03-20","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01745491041"},{"roll":"13","prevRoll":"13","tot":"11","name":"Most Razia Sultana","nameBn":"মোছাঃ রাজিয়া সুলতানা","father":"Md Anamul Haque","fatherBn":"মোঃ এনামূল হক","mother":"Mst Shor Banu","dob":"2009-08-05","addr":"খালিশা খুটামারা শাহীপাড়া","phone":"01723464201"},{"roll":"14","prevRoll":"74","tot":"35","name":"Meghla Akter Rupa","nameBn":"মেঘলা আক্তার রুপা","father":"Md Monbberul Haque","fatherBn":"মোঃ মোনাব্বেরুল ইসলাম","mother":"Mst Sabina Begum","dob":"2009-02-24","addr":"পশ্চিম খুটামারা ঘোনপাড়া","phone":"01735471291"},{"roll":"15","prevRoll":"7","tot":"10","name":"Mst Mobaser Sinha Saba","nameBn":"মোছাঃ মোবাশ্বের সিনহা সাবা","father":"Md Monsur Ali","fatherBn":"মোছাঃ মনছুর আলী","mother":"Mst Monzuara Begum","dob":"2011-03-11","addr":"পশ্চিম খুটামারা মাদ্রাসাপাড়া","phone":"01723799484"},{"roll":"16","prevRoll":"26","tot":"39","name":"Md Sumon Islam","nameBn":"মোঃ সুমন ইসলাম","father":"Md Mahidul Islam","fatherBn":"মোঃ মহিদুল ইসলাম","mother":"Mst Sarina Begum","dob":"2011-02-28","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01741854035"},{"roll":"17","prevRoll":"16","tot":"8","name":"Mst Jui Akter Jerin","nameBn":"ওমাছাঃ জুই আক্তার জেরিন","father":"Md Zikrul Islam","fatherBn":"মোঃ জিকরুল ইসলাম","mother":"Most Salma Begum","dob":"2011-09-02","addr":"পশ্চিম খুটামারা ঘোনপাড়া","phone":"01796898359"},{"roll":"18","prevRoll":"14","tot":"22","name":"Mst Aksamoni","nameBn":"মোছাঃ আকশা মনি","father":"Md Anisur Rahman","fatherBn":"মোঃ আনিছুর রহমান","mother":"Mst Afroza Begum","dob":"2010-12-29","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01783234452"},{"roll":"19","prevRoll":"27","tot":"49","name":"Md Rifat Hossen","nameBn":"মোঃ রিফাত হোসেন","father":"Md Reazul Islam","fatherBn":"মোঃ রেয়াজুল ইসলাম","mother":"Mst Silpy Begum","dob":"2011-03-05","addr":"পশ্চিম খুটামারা দোলারবাড়ি","phone":"01774634265"},{"roll":"20","prevRoll":"25","tot":"34","name":"Mst Rafiya Akter Tasnim","nameBn":"মোছাঃ রাফিয়া তাসনিম","father":"Md Rouful Islam","fatherBn":"মোঃ রউফুল ইসলাম","mother":"Mst Jesmin Akhter","dob":"2012-01-01","addr":"খালিশা খুটামারা","phone":"01786995154"},{"roll":"21","prevRoll":"22","tot":"15","name":"Mst Srity Akter Najmin","nameBn":"মোছাঃ সৃষ্টি আক্তার নাজমিন","father":"Md Aminur Rahman","fatherBn":"মোঃ আমিনুর রহমান","mother":"Mst Sahida Begum","dob":"2010-03-13","addr":"পশ্চিম খুটামারা ঘোনপাড়া","phone":"17933878342"},{"roll":"22","prevRoll":"19","tot":"2","name":"Mst Misu Akter","nameBn":"মোছাঃ মিশু আক্তার","father":"Md Moshiar Rahman","fatherBn":"মোঃ মশিউর রহমান","mother":"Nilufa Akter","dob":"","addr":"পশ্চিম খুটামারা পূর্ব খামাত","phone":"01797693023"},{"roll":"23","prevRoll":"12","tot":"5","name":"Mst Misi Akter","nameBn":"মোছাঃ মিশি আক্তার","father":"Md Moinal Hossen","fatherBn":"মোঃ ময়নাল হোসন","mother":"Mst Sahina Begum","dob":"2010-08-20","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01701975170"},{"roll":"24","prevRoll":"86","tot":"93","name":"Mst Tamanna Akter","nameBn":"মোছাঃ তামান্না আক্তার","father":"Md Babu Mia","fatherBn":"মোঃ বাবু মিয়া","mother":"Mst Etiara Begum","dob":"2012-03-23","addr":"","phone":""},{"roll":"25","prevRoll":"46","tot":"18","name":"Most Mitu Moni","nameBn":"মোছাঃ মিতু মনি","father":"Md Mejanur Rahman","fatherBn":"মোঃ মিজানুর রহমান","mother":"Mst Rume Begum","dob":"2011-11-22","addr":"পশ্চিম খুটামারা দোলারবাড়ি","phone":"01798489646"},{"roll":"26","prevRoll":"20","tot":"6","name":"Most Mohona Akter","nameBn":"মোছাঃ মোহনা আক্তার","father":"Md Mostafizur Rahman","fatherBn":"মোঃ মোস্তাফিজুর","mother":"Nazma Begum","dob":"2012-08-17","addr":"পশ্চিম খুটামারা দোলারবাড়ি","phone":"01704378854"},{"roll":"27","prevRoll":"80","tot":"78","name":"Md Rabbi Islam Riyad","nameBn":"মোঃ রাব্বি ইসলাম রিয়াদ","father":"Md Fazlul Haque","fatherBn":"মোঃ ফজলুল হক","mother":"Mst Rubina Begum","dob":"2010-08-06","addr":"পশ্চিম খুটামারা","phone":"01774181903"},{"roll":"28","prevRoll":"38","tot":"17","name":"Most Beby Akter","nameBn":"মোছাঃ বেবি আক্তিার","father":"Md Rauson Ali","fatherBn":"মোঃ রওশন আলী","mother":"Mst Kulsum Akter","dob":"2009-04-05","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01774317259"},{"roll":"30","prevRoll":"35","tot":"21","name":"Mst Rubina Akter Pinki","nameBn":"মোছাঃ রুবিনা আক্তার পিংকি","father":"Md Robiul Islam","fatherBn":"মোঃ রবিউল ইসলাম","mother":"Mst Marufa Begum","dob":"2010-01-14","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01720016588"},{"roll":"31","prevRoll":"18","tot":"25","name":"Most Taslima Akter","nameBn":"মোছাঃ তাসলিমা আক্তার","father":"Md Aiub Ali","fatherBn":"মোঃ আইয়্যুব আলী","mother":"Mst Monjila Akhter","dob":"2011-12-21","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01995995386"},{"roll":"32","prevRoll":"40","tot":"9","name":"Mst Borsa Akter","nameBn":"মোছাঃ বর্ষা আক্তার","father":"Md Biplob Mia","fatherBn":"মোঃ বিপ্লব মিয়া","mother":"Mst Narjuma","dob":"2010-04-19","addr":"পশ্চিম খুটামারা উত্তরটারী","phone":"01315714077"},{"roll":"33","prevRoll":"77","tot":"71","name":"Md Mojahid Islam","nameBn":"মোঃ মোজাহিদ ইসলাম","father":"Md Anowarul Haq","fatherBn":"মোঃ আনোয়ারুল হক","mother":"Mst Laily Begum","dob":"2008-03-13","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01727596934"},{"roll":"34","prevRoll":"39","tot":"24","name":"Mst Khadija Akter Jibu","nameBn":"মোছাঃ খাদিজা আক্তার জিবু","father":"Md Ziaur Rahman","fatherBn":"মোঃ জিয়াউর রহমান","mother":"Mst Khaleda Begum","dob":"2011-02-03","addr":"পূর্ব খুটামারা মুন্সিপাড়া","phone":"17069722077"},{"roll":"35","prevRoll":"41","tot":"23","name":"Mst Rifa Akter","nameBn":"মোছাঃ রিফা আক্তার","father":"Md Obaydul","fatherBn":"মোঃ ওবায়দুল","mother":"Mst Sarifa","dob":"2010-07-14","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01737345443"},{"roll":"36","prevRoll":"36","tot":"7","name":"Most Motmainna Akter","nameBn":"মোছাঃ মোতমাইন্না আক্তার","father":"Md Hamidur Rahman","fatherBn":"মোঃ হামিদুর রহমান","mother":"Monsura Begum","dob":"2011-12-01","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01770329721"},{"roll":"37","prevRoll":"24","tot":"46","name":"Md Ebrahim Ali","nameBn":"মোঃ ইব্রাহীম আলী","father":"Md Redoeanul","fatherBn":"মোঃ রেদোয়ানুল","mother":"Mst Fazila Begum","dob":"2010-07-21","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01701975165"},{"roll":"38","prevRoll":"33","tot":"32","name":"Mst Akhi Moni","nameBn":"মোছাঃ আখি মনি","father":"Md Nur Alom","fatherBn":"মোঃ নুর আলম","mother":"Most Mokarrema Begum","dob":"2012-10-20","addr":"পশ্চিম খুটামারা শাহীপাড়া","phone":"01745734582"},{"roll":"40","prevRoll":"59","tot":"70","name":"Md Monirujjaman","nameBn":"মোঃ মনিরুজ্জামান","father":"Md Jahangir Alom","fatherBn":"মোঃ জাহাঙ্গীর আলম","mother":"Mst Kamola Begum","dob":"2008-03-15","addr":"দক্ষিন দেশিবাই","phone":"01746421186"},{"roll":"41","prevRoll":"23","tot":"45","name":"Md Liton Islam","nameBn":"মোঃ লিটন ইসলাম","father":"Md Rahidul Islam","fatherBn":"মোঃ রহিদুল ইসলাম","mother":"Mst Momata Begum","dob":"2009-01-04","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01324149833"},{"roll":"42","prevRoll":"43","tot":"28","name":"Mst Ayesha ‍Siddika","nameBn":"মোছাঃ আয়শা ছিদ্দীকা","father":"Md Abdul Malek","fatherBn":"মোঃ আব্দুল মালেক","mother":"Mst Golapi Begum","dob":"2009-08-05","addr":"পশ্চিম খুটামারা দোলারবাড়ি","phone":"01949084349"},{"roll":"43","prevRoll":"52","tot":"61","name":"Md Sujon Islam","nameBn":"মোঃ সুজন ইসলাম","father":"Md Mobarok Hossain","fatherBn":"মোঃ মোবারক হোসাইন","mother":"Mst Samoli Begum","dob":"2009-02-10","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01753333276"},{"roll":"44","prevRoll":"50","tot":"74","name":"Md Sujon Islam","nameBn":"মোঃ সবুজ ইসলাম","father":"Md Labujar Rahman","fatherBn":"মোঃ মোঃ লাবুজার রহমান","mother":"Mst Sumi Begum","dob":"2007-07-11","addr":"ধাইজান ডাঙ্গাপাড়া","phone":"01608294060"},{"roll":"45","prevRoll":"51","tot":"48","name":"Md Alifar Rahman","nameBn":"মোঃ আলিফার রহমান","father":"Md Majedul Islam","fatherBn":"মোঃ মাজেদুল ইসলাম","mother":"Mst Alfa Begum","dob":"2010-11-23","addr":"কিশামত বটতলা","phone":"01328597369"},{"roll":"46","prevRoll":"45","tot":"79","name":"Md Mamun Hossen","nameBn":"মোঃ মামুন হোসেন","father":"Md Sopear Rahman","fatherBn":"মোঃ শপিয়ার রহমান","mother":"Mst Jasmin Begum","dob":"2010-12-12","addr":"ধাইজান ডাঙ্গাপাড়া","phone":"01723364771"},{"roll":"47","prevRoll":"58","tot":"64","name":"Md Kamruzzaman","nameBn":"মোঃ কামরুজ্জামান","father":"Md Mostafizar","fatherBn":"মোঃ মোস্তাফিজার","mother":"Mst Nurzahan","dob":"2009-09-18","addr":"পশ্চিম খুটামারা শাহীপাড়া","phone":"01762882190"},{"roll":"48","prevRoll":"56","tot":"54","name":"Md Samiul Islam","nameBn":"মোঃ সামিউল ইসলাম","father":"Md Ayub Ali","fatherBn":"মোঃ আইয়্যুব আলী","mother":"Mst Setara Begum","dob":"2008-01-02","addr":"পশ্চিম খুটামারা কিশামত বটতলা","phone":"01311898319"},{"roll":"50","prevRoll":"44","tot":"60","name":"Md Sobuj Islam","nameBn":"মোঃ সবুজ ইসলাম","father":"Md Monsur Ali","fatherBn":"মোঃ মনছুর আলী","mother":"Mst Shauli Begum","dob":"2009-08-12","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01744341178"},{"roll":"51","prevRoll":"48","tot":"57","name":"Md Sakibul Islam","nameBn":"মোঃ সাকিবুল ইসলাম","father":"Md Elaiyas Ali","fatherBn":"মোঃ ইলিয়াস আলী","mother":"Mst Kajli Begum","dob":"2008-12-02","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01943601252"},{"roll":"52","prevRoll":"63","tot":"58","name":"Md Sakib Hasan","nameBn":"মোঃ সাকিব হাসান","father":"Md Shaha Jahan Ali","fatherBn":"মোঃ শাহাজাহান আলী","mother":"Mst Rupali Begum","dob":"2008-01-05","addr":"কিশামত বটতলা","phone":"01717036438"},{"roll":"53","prevRoll":"68","tot":"50","name":"Md Mehedi Hasan","nameBn":"মোঃ মেহেদী হাসান","father":"Md Ibrahim Ali","fatherBn":"মোঃ ইব্রাহীম আলী","mother":"Mst Silpy Akter","dob":"2009-12-16","addr":"পশ্চিম খুটামারা দোলারবাড়ি","phone":"01740213635"},{"roll":"54","prevRoll":"49","tot":"30","name":"Most Maria Akter","nameBn":"মোছাঃ মারিয়া আক্তার","father":"Md Manik Hosen","fatherBn":"মোঃ মানিক হোসেন","mother":"Parvin Akter","dob":"2009-04-18","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01871206230"},{"roll":"55","prevRoll":"53","tot":"56","name":"Nazir Hossen","nameBn":"নাজির হোসেন","father":"Md Rajjak Hosan","fatherBn":"মোঃ রাজ্জাক হোসেন","mother":"Mst Nasima Begum","dob":"2008-02-21","addr":"বিন্যাকুড়ি","phone":"01707445315"},{"roll":"56","prevRoll":"62","tot":"27","name":"Jannatul Ferdousi","nameBn":"জান্নাতূল ফেরদৌসী","father":"Md Abdul Latif","fatherBn":"মোঃ আব্দুল লতিফ","mother":"Mst Forida Begum","dob":"2008-12-21","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01797620263"},{"roll":"57","prevRoll":"61","tot":"77","name":"Md Hasu Islam","nameBn":"মোঃ হাসু ইসলাম","father":"Md Moynul Islam","fatherBn":"মোঃ ময়নুল ইসলাম","mother":"Mst Hazera Begum","dob":"2011-08-07","addr":"পশ্চিম খুটামারা খামাত পাড়া","phone":"01722584874"},{"roll":"58","prevRoll":"64","tot":"63","name":"Md Hridoy Hosen","nameBn":"মোঃ হৃদয় হোসেন","father":"Md Tyaz Uddin","fatherBn":"মোঃ তয়েজ উদ্দিন","mother":"Mst Anoura Begum","dob":"2009-02-14","addr":"পশ্চিশ খুটামারা মমিনটুলী","phone":"01321461161"},{"roll":"59","prevRoll":"69","tot":"55","name":"Rakibul Haque","nameBn":"রাকিবুল ইসলাম","father":"Md Sahadul Haque","fatherBn":"মোঃ শাহাদুল হক","mother":"Mst Rina Begum","dob":"2008-03-12","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01750326001"},{"roll":"60","prevRoll":"60","tot":"62","name":"Md Roman Islam","nameBn":"মোঃ রোমান ইসলাম","father":"Md Afzal Hosen","fatherBn":"মোঃ আফজাল হোসেন","mother":"Mst Tahara Begum","dob":"2009-03-24","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01777259893"},{"roll":"61","prevRoll":"73","tot":"76","name":"Md Sohel Rana","nameBn":"মোঃ সোহেল রানা","father":"Md Dulal Hossan","fatherBn":"মোঃ দুলাল হোসেন","mother":"Mst Sopna Begum","dob":"2012-12-25","addr":"পূর্ব খামাতপাড়া","phone":"01797946760"},{"roll":"62","prevRoll":"67","tot":"81","name":"Md Sakil Ahmed","nameBn":"মোঃ সাকিল আহমেদ","father":"Md Atikul Islam","fatherBn":"মোঃ আতিকুল ইসলাম","mother":"Mst Sherina Begum","dob":"2007-05-07","addr":"পূর্ব খুটামারা চেয়ারম্যানপাড়া","phone":""},{"roll":"63","prevRoll":"70","tot":"65","name":"Md Mojahid Hosen","nameBn":"মোঃ মোজাহিদ হোসেন","father":"Md Nur Mohammad","fatherBn":"মোঃ নুর মোহাম্মাদ","mother":"Mst Mokchuda Begum","dob":"2009-02-15","addr":"আরাজি কাঠালী","phone":"01706595180"},{"roll":"64","prevRoll":"84","tot":"89","name":"Md Siyam Hossain","nameBn":"মোঃ ছিয়াম হোসাইন","father":"Md Razaul Islam","fatherBn":"মোঃ রেজাউল ইসলাম","mother":"Mst Ragia Begum","dob":"2009-05-03","addr":"","phone":""},{"roll":"65","prevRoll":"34","tot":"43","name":"Md Hossain Islam","nameBn":"মোঃ হোসাইন ইসলাম","father":"Md Mahamud Hossein","fatherBn":"মোঃ মাহামুদ হোসেন","mother":"Mst Hosneara Begum","dob":"2011-11-21","addr":"পশ্চিম খুটামারা ঘোনপাড়া","phone":"01727207188"},{"roll":"66","prevRoll":"5","tot":"31","name":"Sohagi Akter","nameBn":"সোহাগী আক্তার","father":"Md Saiod Ali","fatherBn":"মোঃ সৈয়দ আলী","mother":"Garna","dob":"2009-08-05","addr":"পশ্চিম খুটামারা শাহীপাড়া","phone":"133941130"},{"roll":"67","prevRoll":"10","tot":"14","name":"Umme Salma","nameBn":"উম্মে সালমা","father":"Md Zuyel","fatherBn":"মোঃ জুয়েল","mother":"Mst Rubina Akter","dob":"2009-11-23","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01733233634"},{"roll":"68","prevRoll":"11","tot":"42","name":"Md Zahidul Islam","nameBn":"মোঃ জাহিদুল ইসলাম","father":"Md Aliar Rahman","fatherBn":"মোঃ অলিয়ার রহমান","mother":"Mst Zahemina","dob":"2009-12-13","addr":"পশ্চিম খুটামারা মাঝাপাড়া","phone":"01717765652"},{"roll":"69","prevRoll":"17","tot":"12","name":"Most Rasida Akter","nameBn":"মোছাঃ রাশিদা আক্তার","father":"Md Rasedul Islam","fatherBn":"মোঃ রাশেদুল ইসলাম","mother":"Mst Shapla Begum","dob":"2008-08-01","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01306164082"},{"roll":"70","prevRoll":"28","tot":"69","name":"Tanbir Hasan","nameBn":"তানবির হাসান","father":"Md Shahgahan Ali","fatherBn":"মোঃ শাহাজাহান আলী","mother":"Shamima Akter Sammi","dob":"2007-06-14","addr":"কিশামত বটতলা","phone":"01770952303"},{"roll":"71","prevRoll":"29","tot":"13","name":"Mst Jarin Akter","nameBn":"মোছাঃ জেরিন আক্তার","father":"Md Azizul Islam","fatherBn":"মোঃ আজিজুল ইসলাম","mother":"Mst Momota Begum","dob":"2010-10-12","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01773910473"},{"roll":"72","prevRoll":"30","tot":"41","name":"Md Halimur Rahman","nameBn":"মোঃ হালিমুর রহমান","father":"Md Fazlu Mia","fatherBn":"মোঃ ফজলু মিয়া","mother":"Mst Habiba Begum","dob":"2010-02-14","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01601621675"},{"roll":"73","prevRoll":"31","tot":"19","name":"Mst Sultana Akter","nameBn":"মোছাঃ সুলতানা আক্তার","father":"Mohamod Ali","fatherBn":"মোহাম্মাদ আলী","mother":"Mst Rozina Begum","dob":"2010-03-16","addr":"পূর্ব খুটামারা মুন্সিপাড়া","phone":"01313399833"},{"roll":"74","prevRoll":"37","tot":"16","name":"Mst Taslima Akter Bebi","nameBn":"মোছাঃ তাসলিমা আক্তার বেবি","father":"Md Nazrul Islam","fatherBn":"মোঃ নজরুল ইসলাম","mother":"Mst Nargis Banu","dob":"2010-03-05","addr":"পশ্চিম খুটামারা ঘোনপাড়া","phone":"01783122352"},{"roll":"75","prevRoll":"42","tot":"26","name":"Mst Ashrifa Akter","nameBn":"মোচাঃ আশরিফা আক্তার","father":"Md Azad","fatherBn":"মোঃ আজাদ","mother":"Most Ranufa Begum","dob":"2009-08-03","addr":"পশ্চিম খুটামারা মমিনটুলী","phone":"01783275054"},{"roll":"76","prevRoll":"47","tot":"53","name":"Md Mamun Islam","nameBn":"মেসাঃ মামুন ইসলাম","father":"Md Shahajan Ali","fatherBn":"মোঃ শাহাজাহান আলী","mother":"Mst Moyna Begum","dob":"2010-04-07","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01750944932"},{"roll":"77","prevRoll":"54","tot":"51","name":"Md Mosiur Rahman","nameBn":"মোঃ মশিউর রহমান","father":"Md Mossarof Hossen","fatherBn":"মোঃ মোশারফ হোসেন","mother":"Mst Morseda Begum","dob":"2009-12-08","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01312057343"},{"roll":"78","prevRoll":"55","tot":"52","name":"Md Ferdous Alam","nameBn":"মোঃ ফেরদৌস আলম","father":"Md Akramul","fatherBn":"মোঃ একরামুল","mother":"Mst Fanse","dob":"2008-07-23","addr":"পশ্চিম খুটামারা পূর্ব খামাত","phone":"01774359477"},{"roll":"79","prevRoll":"57","tot":"59","name":"Md Rezaul Karim","nameBn":"মোঃ রেজিউল করিম","father":"Md Delabar Rahman","fatherBn":"মোঃ দেলোয়ার রহমান","mother":"Mst Gole Begum","dob":"2009-05-07","addr":"কিশামত বটতলা/ শান্তিনগর","phone":"01309794102"},{"roll":"80","prevRoll":"65","tot":"4","name":"Mst Jannatul Fredosi","nameBn":"মোছাঃ জান্নাতূল ফেরদৌসী","father":"Mohammad Zaman","fatherBn":"মোহাম্মাদ জামান","mother":"Halima Akter","dob":"","addr":"পশ্চিম খুটামারা হাজিপাড়া","phone":"01740425756"},{"roll":"81","prevRoll":"66","tot":"20","name":"Most Aki Moni","nameBn":"মোছাঃ আখি মনি","father":"Md Abdul Kiyum","fatherBn":"মোঃ আব্দুল কাইয়্যুম","mother":"Mst Ragia Khatun","dob":"2011-07-01","addr":"পশ্চিম খুটামারা পূর্ব খামাত","phone":"01743810338"},{"roll":"82","prevRoll":"72","tot":"67","name":"Md MizanUddin","nameBn":"মোঃ মিজান উদ্দিন","father":"Md Tayez Uddin","fatherBn":"মোঃ তয়েজ উদ্দিন","mother":"Mst Monufa Begum","dob":"2007-05-03","addr":"পশ্চিম খুটামারা খামাত পাড়া","phone":"01755999253"},{"roll":"83","prevRoll":"75","tot":"47","name":"Md Shakil","nameBn":"মোঃ সাকিল","father":"Md Nurnbi hoque","fatherBn":"মোঃ নুরনবী হক","mother":"Mst Sefali Begum","dob":"2012-03-07","addr":"আরাজি কাঠালী","phone":"01867529994"},{"roll":"84","prevRoll":"76","tot":"72","name":"Moniruzzaman","nameBn":"মনিরুজ্জামান","father":"Md Afzalul Haque","fatherBn":"মোঃ আফজালুল হক","mother":"Mst Moslema Khatun","dob":"2007-12-28","addr":"বিন্যাকুড়ি মাজার","phone":"01786973105"},{"roll":"85","prevRoll":"78","tot":"73","name":"Md Rayhan Islam","nameBn":"মোঃ রায়হান ইসলাম","father":"Md Aiyob Ali","fatherBn":"মোঃ আইয়ুব আলী","mother":"Mst Sarifa Begum","dob":"2007-05-13","addr":"পশ্চিম খুটামারা কবিরাজপাড়া","phone":"01774408560"},{"roll":"86","prevRoll":"79","tot":"75","name":"Mahafuj Hasan Murad","nameBn":"মাহাফুজ হাসান মুরাদ","father":"Md Iddris Ali","fatherBn":"মোঃ ইদ্রিস আলী","mother":"Mst Monsura Begum","dob":"2007-09-20","addr":"কিশামত বটতলা","phone":"01739425000"},{"roll":"87","prevRoll":"81","tot":"80","name":"Md Abdullah Al Ansari","nameBn":"মোঃ আব্দুল্লাহ আল আনছারি","father":"Md Monzurul Haque","fatherBn":"মোঃ ময়নুল হক","mother":"Mst Ruzina Begum","dob":"2009-08-05","addr":"পুটিমারী","phone":"01706682833"},{"roll":"88","prevRoll":"82","tot":"82","name":"Md Mirat Hassan","nameBn":"মোঃ মিরাত হাসান","father":"Md Abdur Razzak","fatherBn":"মোঃ আব্দুর রাজ্জাক","mother":"Mst Manoza Begum","dob":"2007-01-01","addr":"পশ্চিম খুটামারা মাদ্রাসাপাড়া","phone":""},{"roll":"89","prevRoll":"83","tot":"88","name":"Nur Mohammad","nameBn":"নুর মোহাম্মাদ","father":"Md Jikrul Haque","fatherBn":"মোঃ জিকরুল হক","mother":"Mst Nur Banu Begum","dob":"2008-12-23","addr":"","phone":""},{"roll":"90","prevRoll":"85","tot":"91","name":"Md Sohel Rana","nameBn":"মোঃ সোহেল রানা","father":"Md Taib Ali","fatherBn":"মোঃ তাইব আলী","mother":"Mst Moniza Begum","dob":"2007-08-17","addr":"","phone":""}];
+const SEED_CLASS='Ten';
+const DEF_HEADS=[{id:'h1',name:'মাসিক বেতন (Tuition)',amt:0},{id:'h2',name:'পরীক্ষা ফি (Exam)',amt:0},{id:'h3',name:'ভর্তি / সেশন ফি (Admission)',amt:0},{id:'h5',name:'ফরম ফিলাপ ফি (Form Fill-up)',amt:0},{id:'h6',name:'রেজিস্ট্রেশন ফি (Registration)',amt:0},{id:'h4',name:'অন্যান্য (Others)',amt:0}];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const today=()=>new Date().toISOString().slice(0,10);
+const taka=n=>'৳'+(Number(n)||0).toLocaleString('en-IN');
+
+let DB=load();
+function load(){
+  try{const d=JSON.parse((DESK&&DESK.loadSync&&DESK.loadSync())||localStorage.getItem(KEY));if(d&&d.students){migrate(d);return d}}catch(e){}
+  return{settings:{name:'Your Madrasah Name',eiin:'',phone:'',session:'2025-2026',heads:DEF_HEADS.map(h=>({...h})),v:5,sessions:['2025-2026'],logo:'',
+    address:[{k:'Village',v:''},{k:'Post Office',v:''},{k:'Upazila',v:''},{k:'District',v:''}],
+    classes:['Play','Nursery','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten']},
+    students:SEED.map(o=>({id:uid(),pays:[],fees:{},session:'2025-2026',cls:SEED_CLASS,res:'',rem:'',...o}))};
+}
+function migrate(d){
+  const st=d.settings;
+  if(!st.heads||!st.heads.length)st.heads=DEF_HEADS.map(h=>({...h}));
+  if((st.v||0)<3){
+    st.v=3;
+    if(!st.session||/^\d{4}$/.test(st.session))st.session='2025-2026';
+    d.students.forEach(s=>{
+      if(s.cls==='Unassigned')s.cls=SEED_CLASS;
+      if(!s.fees){s.fees={};if(+s.fee>0)s.fees[st.heads[0].id]=+s.fee}
+      delete s.fee;
+    });
+    st.classes=st.classes.filter(c=>c!=='Unassigned'||d.students.some(s=>s.cls===c));
+    if(!st.classes.includes(SEED_CLASS))st.classes.push(SEED_CLASS);
+  }
+  if((st.v||0)<4){
+    st.v=4;
+    [DEF_HEADS[3],DEF_HEADS[4]].forEach(h=>{if(!st.heads.some(x=>x.id===h.id||x.name===h.name))st.heads.splice(Math.max(0,st.heads.length-1),0,{...h})});
+  }
+  if((st.v||0)<5){
+    st.v=5;if(!st.session)st.session='2025-2026';
+    d.students.forEach(s=>{if(!s.session)s.session=st.session});
+    st.sessions=[...new Set([st.session,...d.students.map(s=>s.session)])];
+  }
+  if(!st.sessions||!st.sessions.length)st.sessions=[st.session];
+  if(!st.sessions.includes(st.session))st.sessions.push(st.session);
+  if(!st.rcpt)st.rcpt=Math.max(0,...d.students.flatMap(s=>(s.pays||[]).map(p=>+p.no||0)));
+  d.students.forEach(s=>{if(!s.fees)s.fees={}});
+}
+function save(){
+  const j=JSON.stringify(DB);
+  try{localStorage.setItem(KEY,j)}catch(e){if(!DESK)toast('Storage full – remove large logo or export a backup')}
+  try{if(DESK&&DESK.save)DESK.save(j)}catch(e){}
+  scheduleBackup()}
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2500)}
+
+/* ---- helpers ---- */
+const paid=s=>(s.pays||[]).reduce((a,p)=>a+(Number(p.amt)||0),0);
+const heads=()=>DB.settings.heads;
+const cur=()=>DB.settings.session;
+const SS=()=>DB.students.filter(s=>(s.session||cur())===cur());
+const feeHead=(s,h)=>{const v=s.fees&&s.fees[h.id];return (v===undefined||v===''||v===null)?(+h.amt||0):(+v||0)};
+const feeOf=s=>heads().reduce((a,h)=>a+feeHead(s,h),0);
+const paidHead=(s,id)=>(s.pays||[]).filter(p=>p.head===id).reduce((a,p)=>a+(Number(p.amt)||0),0);
+const dueOf=s=>Math.max(0,feeOf(s)-paid(s));
+const headName=id=>{const h=heads().find(x=>x.id===id);return h?h.name:'—'};
+const resTag=r=>r==='Pass'?'<span class="tag pass">Pass</span>':r==='Fail'?'<span class="tag fail">Fail</span>':'<span class="tag none">—</span>';
+function fillClassSelect(el,all){const cur=el.value;el.innerHTML=(all?'<option value="">All classes</option>':'')+DB.settings.classes.map(c=>`<option>${esc(c)}</option>`).join('');if(cur)el.value=cur}
+
+/* ---- header ---- */
+function renderHeader(){
+  const s=DB.settings;
+  $('hLogo').innerHTML=s.logo?`<img src="${s.logo}">`:'<div class="ph">🕌</div>';
+  $('hName').textContent=s.name||'Madrasah';
+  const a=s.address.filter(x=>x.v).map(x=>x.v).join(', ');
+  $('hAddr').textContent=[a,s.eiin?'EIIN: '+s.eiin:'',s.phone?'📞 '+s.phone:'',s.session?'Session: '+s.session:''].filter(Boolean).join(' | ');
+  $('sesSel').innerHTML=s.sessions.map(x=>`<option${x===s.session?' selected':''}>${esc(x)}</option>`).join('');
+  document.title=(s.name||'Madrasah')+' – Accounts';
+}
+
+/* ---- tabs ---- */
+$('nav').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.id==='t-'+b.dataset.t));renderAll()};
+const PF={
+  dash:{title:'Dashboard summary',cls:'dc',res:'dr',render:()=>renderDash()},
+  stu:{title:'Student list',cls:'fc',res:'fr',st:'fd',search:'q',render:()=>renderStudents()},
+  fee:{title:'Fee & collection report',cls:'ff_cls',res:'ff_res',st:'ff_st',head:true,search:'fq',render:()=>renderFee()},
+  res:{title:'Result list',cls:'rc',res:'rf',st:'rd',search:'rq',render:()=>renderRes()}};
+let PT='stu';
+function printTab(t){
+  PT=t;const m=PF[t];$('pp_t').textContent=m.title+' – set the filters, then print. These filters are also applied on screen.';
+  fillClassSelect($('pp_cls'),true);{const cur=new Set(selHeads());$('pp_heads').innerHTML=heads().map(h=>`<label><input type="checkbox" value="${h.id}" ${cur.has(h.id)?'checked':''}> ${esc(h.name)}</label>`).join('')}
+  $('pp_cls').value=$(m.cls).value;$('pp_res').value=$(m.res).value;
+  $('pp_stw').style.display=m.st?'':'none';$('pp_hw').style.display=m.head?'':'none';
+  if(m.st)$('pp_st').value=$(m.st).value;
+  $('mPrt').classList.add('on')}
+function doPrint(){
+  const m=PF[PT];
+  $(m.cls).value=$('pp_cls').value;$(m.res).value=$('pp_res').value;if(m.st)$(m.st).value=$('pp_st').value;
+  let headTxt='';if(m.head){const on=new Set([...document.querySelectorAll('#pp_heads input:checked')].map(x=>x.value));
+    document.querySelectorAll('#ffHeadBox input').forEach(x=>x.checked=on.has(x.value));headChk();
+    if(on.size&&on.size<heads().length)headTxt=heads().filter(h=>on.has(h.id)).map(h=>h.name).join(', ')}
+  m.render();closeM('mPrt');
+  const sel=id=>{const e=$(id);return e&&e.value?e.options[e.selectedIndex].text:''};
+  const f=[m.cls&&sel(m.cls)?'Class: '+sel(m.cls):'',sel(m.res)?'Result: '+sel(m.res):'',m.st&&sel(m.st)?'Fee: '+sel(m.st):'',headTxt?'Fee heads: '+headTxt:'',
+    m.search&&$(m.search).value?'Search: "'+$(m.search).value+'"':'',PT==='fee'&&($('ff_from').value||$('ff_to').value)?'Dates: '+($('ff_from').value||'…')+' → '+($('ff_to').value||'…'):''].filter(Boolean);
+  const ps=$('ps-'+PT);ps.innerHTML=$('pp_sum').value==='1'?`<b>${esc(m.title)}</b> • Session ${esc(cur())} • Printed ${today()}<br>Filters: ${f.length?esc(f.join(' • ')):'none'}`:'';
+  const st=document.createElement('style');st.textContent='@page{size:A4 '+$('pp_ori').value+';margin:10mm}';document.head.appendChild(st);
+  const el=$('t-'+PT);el.classList.add('printing');window.print();el.classList.remove('printing');st.remove();ps.innerHTML=''}
+['dash','stu','fee','res'].forEach(t=>{const d=document.createElement('div');d.className='psum';d.id='ps-'+t;$('t-'+t).prepend(d)});
+
+/* ---- dashboard ---- */
+function renderDash(){
+  const S=SS().filter(s=>(!$('dc').value||s.cls===$('dc').value)&&resOk(s,$('dr').value)),fee=S.reduce((a,s)=>a+feeOf(s),0),col=S.reduce((a,s)=>a+paid(s),0);
+  const p=S.filter(s=>s.res==='Pass').length,f=S.filter(s=>s.res==='Fail').length;
+  $('stats').innerHTML=[['Students',S.length],['Total fee',taka(fee)],['Collected',taka(col)],['Total due',taka(Math.max(0,fee-col))],['Pass',p],['Fail',f]]
+   .map(([a,b])=>`<div class="stat"><small>${a}</small><b>${b}</b></div>`).join('');
+  const rows=DB.settings.classes.map(c=>{const L=S.filter(s=>s.cls===c);if(!L.length)return'';
+    const fe=L.reduce((a,s)=>a+feeOf(s),0),co=L.reduce((a,s)=>a+paid(s),0);
+    return`<tr><td>${esc(c)}</td><td class="n">${L.length}</td><td class="n">${taka(fe)}</td><td class="n">${taka(co)}</td><td class="n due">${taka(Math.max(0,fe-co))}</td><td class="n">${L.filter(s=>s.res==='Pass').length}</td><td class="n">${L.filter(s=>s.res==='Fail').length}</td></tr>`}).join('');
+  const hr=heads().map(h=>{const fe=S.reduce((a,s)=>a+feeHead(s,h),0),co=S.reduce((a,s)=>a+paidHead(s,h.id),0);
+    return`<tr><td>${esc(h.name)}</td><td class="n">${taka(fe)}</td><td class="n">${taka(co)}</td><td class="n due">${taka(Math.max(0,fe-co))}</td></tr>`}).join('');
+  $('headTbl').innerHTML='<tr><th>Fee head</th><th class="n">Fee</th><th class="n">Collected</th><th class="n">Due</th></tr>'+(hr||'<tr><td colspan="4" class="hint">No fee heads – add in Settings</td></tr>');
+  $('classTbl').innerHTML='<tr><th>Class</th><th class="n">Students</th><th class="n">Fee</th><th class="n">Collected</th><th class="n">Due</th><th class="n">Pass</th><th class="n">Fail</th></tr>'+(rows||'<tr><td colspan="7" class="hint">No data yet</td></tr>');
+}
+
+/* ---- students ---- */
+function renderStudents(){
+  const q=$('q').value.toLowerCase(),c=$('fc').value,r=$('fr').value,d=$('fd').value;
+  let L=SS().filter(s=>(!c||s.cls===c)&&(!q||[s.name,s.nameBn,s.roll,s.phone,s.father,s.fatherBn].join(' ').toLowerCase().includes(q))
+    &&resOk(s,r)&&stOk(s,d));
+  L.sort((a,b)=>(a.cls||'').localeCompare(b.cls||'')||(parseInt(a.roll)||0)-(parseInt(b.roll)||0));
+  $('stuTbl').innerHTML='<tr><th>#</th><th>Roll</th><th>Name</th><th>Father</th><th>Class</th><th>Phone</th><th class="n">Fee</th><th class="n">Collected</th><th class="n">Due</th><th>Result</th><th>Remark</th><th class="noprint">Actions</th></tr>'+
+  (L.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.roll)}</td><td><b>${esc(s.name)}</b>${s.nameBn?`<br><small>${esc(s.nameBn)}</small>`:''}</td><td>${esc(s.father)}${s.fatherBn?`<br><small>${esc(s.fatherBn)}</small>`:''}</td><td>${esc(s.cls)}</td><td>${esc(s.phone)}</td>
+   <td class="n">${taka(feeOf(s))}</td><td class="n ok">${taka(paid(s))}</td><td class="n ${dueOf(s)?'due':'ok'}">${taka(dueOf(s))}</td><td>${resTag(s.res)}</td><td>${esc(s.rem)}</td>
+   <td class="noprint"><button class="btn s bl" onclick="openPay('${s.id}')">Collect</button> <button class="btn s am" onclick="openStu('${s.id}')">Edit</button> <button class="btn s rd" onclick="delStu('${s.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="12" class="hint">No students. Add one or import from Excel.</td></tr>');
+}
+function shownStudents(){
+  const q=$('q').value.toLowerCase(),c=$('fc').value,r=$('fr').value,d=$('fd').value;
+  return SS().filter(s=>(!c||s.cls===c)&&(!q||[s.name,s.nameBn,s.roll,s.phone,s.father,s.fatherBn].join(' ').toLowerCase().includes(q))
+    &&resOk(s,r)&&stOk(s,d))}
+function bulkClass(){const L=shownStudents(),c=$('bulkCls').value;if(!L.length||!c||!confirm(`Move ${L.length} shown students to "${c}"?`))return;L.forEach(s=>s.cls=c);save();renderAll();toast('Class updated')}
+function bulkFee(){const L=shownStudents(),h=$('bulkHead').value,f=+$('bulkFee').value;if(!L.length||!h||$('bulkFee').value==='')return toast('Choose a head and enter an amount');if(!confirm(`Set "${headName(h)}" = ${taka(f)} for ${L.length} shown students?`))return;L.forEach(s=>{(s.fees=s.fees||{})[h]=f});save();renderAll();toast('Fee updated')}
+let editId=null;
+function openStu(id){
+  editId=id||null;fillClassSelect($('f_cls'));
+  const s=id?DB.students.find(x=>x.id===id):{cls:DB.settings.classes[0]};
+  $('mStuT').textContent=id?'Edit Student':'Add Student';
+  $('f_roll').value=s.roll||'';$('f_name').value=s.name||'';$('f_father').value=s.father||'';$('f_nameBn').value=s.nameBn||'';$('f_prevRoll').value=s.prevRoll||'';$('f_tot').value=s.tot||'';$('f_fatherBn').value=s.fatherBn||'';$('f_mother').value=s.mother||'';$('f_dob').value=s.dob||'';$('f_cls').value=s.cls||'';
+  $('f_phone').value=s.phone||'';$('f_addr').value=s.addr||'';$('f_heads').innerHTML=heads().map(h=>`<label>${esc(h.name)} (৳)<input id="fh_${h.id}" type="number" min="0" placeholder="${+h.amt||0}" value="${s.fees&&s.fees[h.id]!==undefined?s.fees[h.id]:''}"></label>`).join('')||'<span class="hint">No fee heads yet</span>';$('f_res').value=s.res||'';$('f_rem').value=s.rem||'';
+  $('mStu').classList.add('on');
+}
+function saveStu(){
+  const nameBn=$('f_nameBn').value.trim(),name=$('f_name').value.trim()||nameBn;if(!name)return toast('Name is required');
+  const o={roll:$('f_roll').value.trim(),name,nameBn,prevRoll:$('f_prevRoll').value.trim(),tot:$('f_tot').value.trim(),fatherBn:$('f_fatherBn').value.trim(),mother:$('f_mother').value.trim(),dob:$('f_dob').value.trim(),father:$('f_father').value.trim(),cls:$('f_cls').value,phone:$('f_phone').value.trim(),
+    addr:$('f_addr').value.trim(),fees:Object.fromEntries(heads().filter(h=>$('fh_'+h.id)&&$('fh_'+h.id).value!=='').map(h=>[h.id,+$('fh_'+h.id).value||0])),res:$('f_res').value,rem:$('f_rem').value.trim()};
+  if(editId)Object.assign(DB.students.find(x=>x.id===editId),o);else DB.students.push({id:uid(),pays:[],session:cur(),...o});
+  save();closeM('mStu');renderAll();toast('Saved')}
+function delStu(id){const s=DB.students.find(x=>x.id===id);if(confirm(`Delete "${s.name}" and all collection records?`)){DB.students=DB.students.filter(x=>x.id!==id);save();renderAll();toast('Deleted')}}
+function closeM(id){$(id).classList.remove('on')}
+
+/* ---- fee ---- */
+function resetFeeFilter(){['fq','ff_cls','ff_res','ff_st','ff_from','ff_to'].forEach(i=>$(i).value='');document.querySelectorAll('#ffHeadBox input').forEach(x=>x.checked=false);headChk()}
+function selHeads(){return [...document.querySelectorAll('#ffHeadBox input:checked')].map(x=>x.value)}
+function headChk(){const H=selHeads(),all=heads();$('ffHeadSum').textContent=!H.length||H.length===all.length?'All fee heads':H.length===1?headName(H[0]):H.length+' fee heads';renderFee()}
+function fillFeeFilters(){
+  fillClassSelect($('ff_cls'),true);
+  const keep=new Set(selHeads());
+  $('ffHeadBox').innerHTML=heads().map(h=>`<label><input type="checkbox" value="${h.id}" ${keep.has(h.id)?'checked':''} onchange="headChk()"> ${esc(h.name)}</label>`).join('')+'<div class="bar" style="margin:6px 0 0"><button type="button" class="btn s gr" onclick="document.querySelectorAll(\'#ffHeadBox input\').forEach(x=>x.checked=false);headChk()">Clear</button></div>';
+  const H=selHeads();$('ffHeadSum').textContent=!H.length?'All fee heads':H.length===1?headName(H[0]):H.length+' fee heads'}
+document.addEventListener('click',e=>{const d=$('ffHeads');if(d&&d.open&&!d.contains(e.target))d.open=false});
+function renderFee(){
+  const q=$('fq').value.toLowerCase(),fc=$('ff_cls').value,fs=$('ff_st').value,d1=$('ff_from').value,d2=$('ff_to').value;
+  const HS=selHeads(),allH=!HS.length||HS.length===heads().length,H=allH?heads():heads().filter(h=>HS.includes(h.id));
+  const fe=s=>H.reduce((a,h)=>a+feeHead(s,h),0),pd=s=>allH?paid(s):H.reduce((a,h)=>a+paidHead(s,h.id),0),du=s=>Math.max(0,fe(s)-pd(s));
+  const status=s=>{const f=fe(s),p=pd(s);return du(s)>0?(p>0?'partial':'unpaid'):'clear'};
+  const L=SS().filter(s=>(!fc||s.cls===fc)&&(!q||[s.name,s.nameBn,s.roll,s.cls].join(' ').toLowerCase().includes(q))
+    &&resOk(s,$('ff_res').value)&&(!fs||(fs==='due'?du(s)>0:status(s)===fs)));
+  const T=L.reduce((a,s)=>({f:a.f+fe(s),p:a.p+pd(s),d:a.d+du(s)}),{f:0,p:0,d:0});
+  const inR=p=>(allH||HS.includes(p.head))&&(!d1||p.date>=d1)&&(!d2||p.date<=d2);
+  const ids=new Set(L.map(s=>s.id));
+  const P=[];SS().forEach(s=>{if(ids.has(s.id))(s.pays||[]).forEach(p=>{if(inR(p))P.push({...p,s})})});
+  P.sort((a,b)=>b.date.localeCompare(a.date)||(b.no||0)-(a.no||0));
+  const inRange=P.reduce((a,p)=>a+(+p.amt||0),0);
+  $('feeSum').innerHTML=[['Students shown',L.length],['Fee'+(allH?'':' – '+H.map(h=>h.name).join(', ')),taka(T.f)],['Collected',taka(T.p)],['Due',taka(T.d)],['Collection list total'+((d1||d2)?' (dates)':''),taka(inRange)]]
+    .map(([a,b])=>`<div class="stat"><small>${esc(a)}</small><b>${b}</b></div>`).join('');
+  const colSpan=H.length+9;
+  $('feeTbl').innerHTML='<tr><th>Roll</th><th>Name</th><th>Class</th><th>Result</th>'+H.map(h=>`<th class="n">${esc(h.name)}<br><small>paid / fee</small></th>`).join('')+'<th class="n">Fee</th><th class="n">Collected</th><th class="n">Due</th><th>Status</th><th class="noprint"></th></tr>'+
+   (L.map(s=>`<tr><td>${esc(s.roll)}</td><td>${esc(s.name)}${s.nameBn?` <small>(${esc(s.nameBn)})</small>`:''}</td><td>${esc(s.cls)}</td><td>${resTag(s.res)}</td>`+
+   H.map(h=>{const f=feeHead(s,h),p=paidHead(s,h.id);return`<td class="n ${p<f?'due':'ok'}">${p.toLocaleString('en-IN')} / ${f.toLocaleString('en-IN')}</td>`}).join('')+
+   `<td class="n">${taka(fe(s))}</td><td class="n ok">${taka(pd(s))}</td><td class="n ${du(s)?'due':'ok'}">${taka(du(s))}</td>
+   <td>${{clear:'<span class="tag pass">Clear</span>',partial:'<span class="tag" style="background:#fef3c7;color:#92400e">Partly paid</span>',unpaid:'<span class="tag fail">Due</span>'}[status(s)]}</td><td class="noprint"><button class="btn s bl" onclick="openPay('${s.id}')">Collect</button></td></tr>`).join('')
+   +(L.length?`<tr class="tot" style="font-weight:700;background:#f8fafc"><td colspan="${4+H.length}">Total (${L.length} students)</td><td class="n">${taka(T.f)}</td><td class="n ok">${taka(T.p)}</td><td class="n due">${taka(T.d)}</td><td colspan="2"></td></tr>`:'<tr><td colspan="'+colSpan+'" class="hint">No students match the filters</td></tr>'));
+  $('payTbl').innerHTML='<tr><th>Rcpt #</th><th>Date</th><th>Student</th><th>Class</th><th>Fee head</th><th class="n">Amount</th><th>Note</th><th class="noprint"></th></tr>'+
+   (P.map(p=>`<tr><td>${esc(p.no||'')}</td><td>${esc(p.date)}</td><td>${esc(p.s.name)} (${esc(p.s.roll)})</td><td>${esc(p.s.cls)}</td><td>${esc(headName(p.head))}</td><td class="n ok">${taka(p.amt)}</td><td>${esc(p.note)}</td>
+   <td class="noprint"><button class="btn s bl" onclick="printReceipt('${p.s.id}','${p.id}')">🧾 Receipt</button> <button class="btn s am" onclick="openPay('${p.s.id}','${p.id}')">Edit</button> <button class="btn s rd" onclick="delPay('${p.s.id}','${p.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="8" class="hint">No collections match</td></tr>')
+   +(P.length?`<tr class="tot" style="font-weight:700;background:#f8fafc"><td colspan="5">Total (${P.length} records)</td><td class="n ok">${taka(inRange)}</td><td colspan="2"></td></tr>`:'');
+}
+let editPay=null;
+function openPay(id,pid){
+  const sel=$('p_stu');editPay=null;
+  sel.innerHTML=SS().map(s=>`<option value="${s.id}">${esc(s.cls)} • ${esc(s.roll)} • ${esc(s.name)}</option>`).join('');
+  if(!SS().length)return toast('Add a student first');
+  if(!heads().length)return toast('Add a fee head in Settings first');
+  $('p_head').innerHTML=heads().map(h=>`<option value="${h.id}">${esc(h.name)}</option>`).join('');
+  sel.disabled=false;$('mPayT').textContent='Fee Collection';
+  if(id)sel.value=id;$('p_amt').value='';$('p_note').value='';$('p_date').value=today();
+  if(pid){const s=DB.students.find(x=>x.id===id),p=s&&s.pays.find(x=>x.id===pid);
+    if(p){editPay={sid:id,pid};sel.disabled=true;$('mPayT').textContent='Edit Collection'+(p.no?' #'+p.no:'');
+      if(!heads().some(h=>h.id===p.head))$('p_head').insertAdjacentHTML('afterbegin','<option value="'+esc(p.head)+'">—</option>');
+      $('p_head').value=p.head;$('p_amt').value=p.amt;$('p_date').value=p.date;$('p_note').value=p.note||''}}
+  payInfo();$('mPay').classList.add('on');
+}
+function payInfo(){const s=DB.students.find(x=>x.id===$('p_stu').value),h=heads().find(x=>x.id===$('p_head').value);if(!s)return;let t=`Total: fee ${taka(feeOf(s))} • collected ${taka(paid(s))} • due ${taka(dueOf(s))}`;if(h){const f=feeHead(s,h),p=paidHead(s,h.id);t=`${h.name}: fee ${taka(f)} • collected ${taka(p)} • due ${taka(Math.max(0,f-p))}\n`+t;$('p_amt').placeholder=Math.max(0,f-p)||''}$('p_info').style.whiteSpace='pre-line';$('p_info').textContent=t}
+function savePay(){
+  const s=DB.students.find(x=>x.id===$('p_stu').value),amt=+$('p_amt').value;
+  if(!s||amt<=0)return toast('Enter a valid amount');
+  if(editPay){const p=s.pays.find(x=>x.id===editPay.pid);Object.assign(p,{head:$('p_head').value,amt,date:$('p_date').value||today(),note:$('p_note').value.trim()});editPay=null}
+  else{DB.settings.rcpt=(DB.settings.rcpt||0)+1;(s.pays=s.pays||[]).push({id:uid(),no:DB.settings.rcpt,head:$('p_head').value,amt,date:$('p_date').value||today(),note:$('p_note').value.trim()})}
+  save();closeM('mPay');renderAll();toast('Collection saved')}
+function delPay(sid,pid){if(!confirm('Delete this collection record?'))return;const s=DB.students.find(x=>x.id===sid);s.pays=s.pays.filter(p=>p.id!==pid);save();renderAll()}
+
+/* ---- results ---- */
+function cardHtml(s){
+  const st=DB.settings,addr=st.address.filter(x=>x.v).map(x=>x.v).join(', ');
+  const H=heads(),rcls=s.res==='Pass'?'p':s.res==='Fail'?'f':'x',rtxt=s.res==='Pass'?'PASSED / উত্তীর্ণ':s.res==='Fail'?'FAILED / অনুত্তীর্ণ':'RESULT NOT PUBLISHED';
+  const rows=H.map(h=>{const f=feeHead(s,h),p=paidHead(s,h.id);return f||p?`<tr><td>${esc(h.name)}</td><td class="n">${taka(f)}</td><td class="n">${taka(p)}</td><td class="n">${taka(Math.max(0,f-p))}</td></tr>`:''}).join('');
+  return`<div class="rcard"><div class="rch">${st.logo?`<img src="${st.logo}">`:''}<div><h2>${esc(st.name)}</h2><div>${esc(addr)}</div><div>${[st.eiin?'EIIN: '+esc(st.eiin):'',st.phone?'Phone: '+esc(st.phone):''].filter(Boolean).join(' | ')}</div></div></div>
+  <h3>Progress Report Card / প্রগতি প্রতিবেদন — ${esc(s.session||cur())}</h3>
+  <table><tr><td class="k">Student name</td><td colspan="3">${esc(s.name)}${s.nameBn?' ('+esc(s.nameBn)+')':''}</td></tr>
+  <tr><td class="k">Father's name</td><td colspan="3">${esc(s.father)}${s.fatherBn?' ('+esc(s.fatherBn)+')':''}</td></tr>
+  <tr><td class="k">Mother's name</td><td colspan="3">${esc(s.mother)}</td></tr>
+  <tr><td class="k">Class</td><td>${esc(s.cls)}</td><td class="k">Roll</td><td>${esc(s.roll)}</td></tr>
+  <tr><td class="k">Date of birth</td><td>${esc(s.dob)}</td><td class="k">Previous roll / TOT</td><td>${esc(s.prevRoll)}${s.tot?' / '+esc(s.tot):''}</td></tr>
+  <tr><td class="k">Address</td><td colspan="3">${esc(s.addr)}</td></tr><tr><td class="k">Contact</td><td colspan="3">${esc(s.phone)}</td></tr></table>
+  <div class="res ${rcls}">${rtxt}</div>
+  <table><tr><td class="k">Remark / মন্তব্য</td><td style="height:48px">${esc(s.rem)}</td></tr></table>
+  <h3 style="font-size:15px">Fee statement / ফি বিবরণ</h3>
+  <table><tr><th>Fee head</th><th class="n">Fee</th><th class="n">Paid</th><th class="n">Due</th></tr>${rows||'<tr><td colspan="4">—</td></tr>'}
+  <tr style="font-weight:700"><td>Total</td><td class="n">${taka(feeOf(s))}</td><td class="n">${taka(paid(s))}</td><td class="n">${taka(dueOf(s))}</td></tr></table>
+  <div class="sig"><div style="border-top:1px solid #000;padding-top:4px;min-width:150px;text-align:center">Class teacher</div><div style="border-top:1px solid #000;padding-top:4px;min-width:150px;text-align:center">Guardian</div><div style="border-top:1px solid #000;padding-top:4px;min-width:150px;text-align:center">Principal / Head</div></div>
+  <div class="foot">Printed on ${today()}</div></div>`}
+function printCards(id){
+  let L=id?[DB.students.find(x=>x.id===id)]:resList();if(!L.length)return toast('No students to print');
+  L.forEach(s=>{const a=$('rs_'+s.id),b=$('rr_'+s.id);if(a){s.res=a.value;s.rem=b.value.trim()}});save();
+  L=[...L].sort((a,b)=>(a.cls||'').localeCompare(b.cls||'')||(parseInt(a.roll)||0)-(parseInt(b.roll)||0));
+  $('cards').innerHTML=L.map(cardHtml).join('');
+  document.body.classList.add('cardprint');window.print();document.body.classList.remove('cardprint')}
+function resList(){const q=$('rq').value.toLowerCase(),c=$('rc').value;
+  return SS().filter(s=>(!c||s.cls===c)&&(!q||[s.name,s.nameBn,s.roll].join(' ').toLowerCase().includes(q))&&resOk(s,$('rf').value)&&stOk(s,$('rd').value))}
+function renderRes(){
+  const L=resList(),allSel=L.length&&L.every(s=>resSel.has(s.id));
+  $('resTbl').innerHTML=`<tr><th><input type="checkbox" ${allSel?'checked':''} onchange="selShown(this.checked)" title="Select all shown"></th><th>Roll</th><th>Name</th><th>Class</th><th>Result</th><th>Remark</th><th class="noprint">Actions</th></tr>`+
+  (L.map(s=>`<tr class="${resSel.has(s.id)?'sel':''}"><td><input type="checkbox" ${resSel.has(s.id)?'checked':''} onclick="rowSel(event,'${s.id}')"></td><td>${esc(s.roll)}</td><td>${esc(s.name)}${s.nameBn?` <small>(${esc(s.nameBn)})</small>`:''}</td><td>${esc(s.cls)}</td>
+   <td><select id="rs_${s.id}" onchange="saveRes('${s.id}')"><option value="">Not set</option><option ${s.res==='Pass'?'selected':''}>Pass</option><option ${s.res==='Fail'?'selected':''}>Fail</option></select></td>
+   <td><input id="rr_${s.id}" value="${esc(s.rem)}" placeholder="Remark" style="width:220px" onchange="saveRes('${s.id}')"></td>
+   <td class="noprint"><button class="btn s am" onclick="printCards('${s.id}')">🖨 Report card</button></td></tr>`).join('')||'<tr><td colspan="7" class="hint">No students</td></tr>');
+  selUpdate();
+}
+function saveRes(id){const s=DB.students.find(x=>x.id===id);s.res=$('rs_'+id).value;s.rem=$('rr_'+id).value.trim();save();toast('Saved');renderDash()}
+/* ---- bulk selection ---- */
+const resSel=new Set();let resLast=null;
+function selUpdate(){const n=SS().filter(s=>resSel.has(s.id)).length;if($('selCnt'))$('selCnt').textContent=n+' selected'}
+function rowSel(ev,id){
+  const L=resList().map(s=>s.id);
+  if(ev.shiftKey&&resLast&&ev.target.checked&&L.includes(resLast)){const a=L.indexOf(resLast),b=L.indexOf(id);L.slice(Math.min(a,b),Math.max(a,b)+1).forEach(x=>resSel.add(x))}
+  else if(ev.target.checked)resSel.add(id);else resSel.delete(id);
+  resLast=id;renderRes()}
+function selShown(on){resList().forEach(s=>on?resSel.add(s.id):resSel.delete(s.id));if(!on&&!$('rq').value&&!$('rc').value&&!$('rf').value&&!$('rd').value)resSel.clear();renderRes()}
+function selStudents(){return SS().filter(s=>resSel.has(s.id))}
+function bulkSel(v){const L=selStudents();if(!L.length)return toast('Tick some students first');
+  if(!confirm(`Set result "${v||'Not set'}" for ${L.length} selected student(s)?`))return;
+  L.forEach(s=>s.res=v);save();renderAll();toast(`${L.length} updated`)}
+function bulkRemark(){const L=selStudents(),t=$('bulkRem').value.trim();if(!L.length)return toast('Tick some students first');
+  if(!confirm(t?`Set remark "${t}" for ${L.length} selected student(s)?`:`Clear the remark of ${L.length} selected student(s)?`))return;
+  L.forEach(s=>s.rem=t);save();renderAll();toast(`${L.length} updated`)}
+/* ---- bulk import of results ---- */
+let riPlan=[];
+function normRes(v){const t=String(v??'').trim();if(!t)return null;
+  if(/^(p|pass|passed|উত্তীর্ণ|পাস|পাশ)/i.test(t))return'Pass';if(/^(f|fail|failed|অনুত্তীর্ণ|ফেল|ফেইল)/i.test(t))return'Fail';return'bad'}
+function riMatch(o){const S=SS();let c;
+  if(o.roll){c=S.filter(s=>String(s.roll).trim()===o.roll&&(!o.cls||s.cls===o.cls))}
+  else{const n=(o.name||o.nameBn||'').toLowerCase();if(!n)return{err:'no roll or name'};c=S.filter(s=>[s.name,s.nameBn].some(x=>x&&x.trim().toLowerCase()===n)&&(!o.cls||s.cls===o.cls))}
+  return c.length===1?{s:c[0]}:{err:c.length?'several students – add a Class column':'student not found'}}
+function openResImport(){riPlan=[];$('riPrev').innerHTML='';$('riFile').value='';$('riGo').disabled=true;$('mRI').classList.add('on')}
+$('riFile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const grid=/\.csv$/i.test(f.name)?csvToGrid(await f.text()):await readXlsxGrid(await f.arrayBuffer());
+    const hi=grid.findIndex(r=>r.some(c=>['roll','name','nameBn'].includes(fieldOf(c))));
+    if(hi<0)return toast('No header row with Roll or Name found');
+    const cols=grid[hi].map(fieldOf);
+    if(!cols.includes('res')&&!cols.includes('rem'))return toast('No Result or Remark column found');
+    riPlan=grid.slice(hi+1).map((r,i)=>{const o={};cols.forEach((k,j)=>{if(k&&!(k in o))o[k]=String(r[j]??'').trim()});return{row:hi+2+i,o}})
+      .filter(p=>p.o.roll||p.o.name||p.o.nameBn||p.o.res||p.o.rem)
+      .map(p=>{const m=riMatch(p.o),res=normRes(p.o.res);let err=m.err||'';if(res==='bad')err='invalid result "'+p.o.res+'"';return{...p,s:m.s,res,err}});
+    const ok=riPlan.filter(p=>!p.err),bad=riPlan.length-ok.length;
+    $('riPrev').innerHTML=`<p><b>${ok.length}</b> row(s) ready to apply${bad?`, <b style="color:#dc2626">${bad}</b> will be skipped`:''}.</p><table><tr><th>Row</th><th>Roll</th><th>Student</th><th>Result</th><th>Remark</th><th>Status</th></tr>`+
+      riPlan.slice(0,300).map(p=>`<tr><td>${p.row}</td><td>${esc(p.o.roll)}</td><td>${p.s?esc(p.s.name):esc(p.o.name||p.o.nameBn||'')}</td><td>${p.res&&p.res!=='bad'?resTag(p.res):'—'}</td><td>${esc(p.o.rem)}</td><td class="${p.err?'due':'ok'}">${p.err?'✖ '+esc(p.err):'✔ '+esc(p.s.cls)}</td></tr>`).join('')+'</table>'+(riPlan.length>300?'<p class="hint">…first 300 rows shown</p>':'');
+    $('riGo').disabled=!ok.length;
+  }catch(err){console.error(err);toast('Could not read this file – use .xlsx or .csv')}};
+function applyResImport(){
+  const ok=riPlan.filter(p=>!p.err);if(!ok.length)return;
+  let ch=0;ok.forEach(p=>{const s=p.s;let c=false;if(p.res&&p.res!=='bad'&&s.res!==p.res){s.res=p.res;c=true}if(p.o.rem&&s.rem!==p.o.rem){s.rem=p.o.rem;c=true}if(p.o.tot&&s.tot!==p.o.tot){s.tot=p.o.tot;c=true}if(c)ch++});
+  save();closeM('mRI');renderAll();toast(`Results applied: ${ch} changed, ${ok.length-ch} unchanged, ${riPlan.length-ok.length} skipped`);riPlan=[]}
+function downloadResTemplate(){
+  const L=[...SS()].sort((a,b)=>(a.cls||'').localeCompare(b.cls||'')||(parseInt(a.roll)||0)-(parseInt(b.roll)||0));
+  dl('results-sheet-'+cur()+'.xlsx',writeXlsx([['Roll','Name','Class','Result','Remark'],...L.map(s=>[s.roll,s.name,s.cls,s.res||'',s.rem||''])],'Results'))}
+function bulkRes(v){const L=resList();if(!L.length||!confirm(`Set ${v} for ${L.length} shown students?`))return;L.forEach(s=>s.res=v);save();renderAll()}
+
+/* ---- import / export ---- */
+const norm=h=>String(h??'').toLowerCase().replace(/[^a-z0-9ঀ-৿]/g,'');
+/* map a header cell to a field */
+function fieldOf(h){
+  const n=norm(h);if(!n)return'';
+  const bn=/bangla|bengali|bn$|বাংলা/.test(n);
+  if(/prev|privi|previous|পূর্ব/.test(n))return'prevRoll';
+  if(/father|fateher|fathr|পিতা/.test(n))return bn?'fatherBn':'father';
+  if(/mother|motehr|mothr|মাতা/.test(n))return bn?'motherBn':'mother';
+  if(/dob|birth|জন্ম/.test(n))return'dob';
+  if(/address|ঠিকানা/.test(n))return'addr';
+  if(/contact|phone|mobile|মোবাইল|ফোন/.test(n))return'phone';
+  if(/name|নাম/.test(n))return bn?'nameBn':'name';
+  if(/^(student|students|শিক্ষার্থী|ছাত্রছাত্রী)$/.test(n))return bn?'nameBn':'name';
+  if(/^(roll|rollno|rollnumber|id|studentid|রোল)$/.test(n))return'roll';
+  if(/^tot$|^total$|^totalmarks$/.test(n))return'tot';
+  if(/class|^cls$|grade|শ্রেণি|শ্রেণী/.test(n))return'cls';
+  if(/fee|বেতন/.test(n))return'fee';
+  if(/paid|collect|আদায়/.test(n))return'paid';
+  if(/result|status|ফলাফল/.test(n))return'res';
+  if(/remark|note|মন্তব্য/.test(n))return'rem';
+  return'';
+}
+/* Bangladeshi mobile numbers often lose the leading 0 in Excel */
+function fixPhone(v){let d=String(v??'').trim();if(!d)return'';if(/^\d+(\.0+)?$/.test(d)){d=d.replace(/\.0+$/,'');if(d.length===10&&d[0]==='1')d='0'+d;if(d.length===13&&d.startsWith('880'))d='0'+d.slice(3)}return d}
+const MON=['january','february','march','april','may','june','july','august','september','october','november','december'];
+function fixDob(v){
+  if(v instanceof Date)return v.toISOString().slice(0,10);
+  const t=String(v??'').trim();if(!t)return'';
+  const m=t.match(/([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})/);
+  if(m){const mi=MON.indexOf(m[1].toLowerCase());if(mi>=0)return`${m[3]}-${String(mi+1).padStart(2,'0')}-${m[2].padStart(2,'0')}`}
+  return t;
+}
+function cell(v){return v instanceof Date?v:String(v??'').trim()}
+let parsed=[];
+$('file').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    let grid;
+    if(/\.csv$/i.test(f.name)){grid=csvToGrid(await f.text())}
+    else{
+      try{grid=await readXlsxGrid(await f.arrayBuffer())}catch(err){console.error(err);return toast('Could not read this file – use .xlsx (not old .xls) or .csv')}
+    }
+    /* header row = first row that maps to a name column */
+    let hi=grid.findIndex(r=>r.some(c=>{const k=fieldOf(c);return k==='name'||k==='nameBn'}));
+    if(hi<0)return toast('Could not find a header row with a Name column');
+    const cols=grid[hi].map(fieldOf);
+    const useBn=!cols.includes('name');
+    parsed=grid.slice(hi+1).map(r=>{const o={};
+      cols.forEach((k,i)=>{if(k&&!(k in o))o[k]=cell(r[i])});
+      o.phone=fixPhone(o.phone);o.dob=fixDob(o.dob);
+      for(const k in o)if(typeof o[k]!=='string'&&k!=='dob')o[k]=String(o[k]);
+      if(!o.name)o.name=o.nameBn||'';
+      return o}).filter(o=>o.name);
+    const known=[...new Set(cols.filter(Boolean))].join(', ');
+    $('impPrev').innerHTML=`<p><b>${parsed.length}</b> valid rows found (header on row ${hi+1}). Columns used: ${esc(known)}.<br>Preview (first 10):</p><table><tr><th>Roll</th><th>Name</th><th>Bangla</th><th>Father</th><th>Mother</th><th>DOB</th><th>Phone</th><th>Class</th></tr>`+
+      parsed.slice(0,10).map(o=>`<tr><td>${esc(o.roll)}</td><td>${esc(o.name)}</td><td>${esc(o.nameBn)}</td><td>${esc(o.father)}</td><td>${esc(o.mother)}</td><td>${esc(o.dob)}</td><td>${esc(o.phone)}</td><td>${esc(o.cls)}</td></tr>`).join('')+'</table>';
+  }catch(err){toast('Could not read file');console.error(err)}
+};
+function csvToGrid(t){
+  t=t.replace(/^﻿/,'');
+  const out=[];let row=[],cur='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'&&t[i+1]==='"'){cur+='"';i++}else if(c==='"')q=false;else cur+=c}
+    else if(c==='"')q=true;else if(c===','){row.push(cur);cur=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(cur);out.push(row);row=[];cur=''}else cur+=c}
+  if(cur||row.length){row.push(cur);out.push(row)}
+  return out;
+}
+function doImport(){
+  if(!parsed.length)return toast('Choose a file first');
+  if($('impMode').value==='replace'){if(!confirm('This will delete all current students. Continue?'))return;DB.students=[]}
+  const defCls=$('impCls').value,h0=heads()[0];
+  let add=0,upd=0;
+  parsed.forEach(o=>{
+    const cls=o.cls||defCls||DB.settings.classes[0];
+    if(cls&&!DB.settings.classes.includes(cls))DB.settings.classes.push(cls);
+    const res=/^p/i.test(o.res||'')?'Pass':/^f/i.test(o.res||'')?'Fail':'';
+    let s=DB.students.find(x=>o.roll&&x.roll===o.roll&&x.cls===cls&&(x.session||cur())===cur());
+    const data={roll:o.roll||'',name:o.name,nameBn:o.nameBn||'',father:o.father||'',fatherBn:o.fatherBn||'',mother:o.mother||'',dob:o.dob||'',prevRoll:o.prevRoll||'',tot:o.tot||'',
+      cls,phone:o.phone||'',addr:o.addr||'',res:o.res?res:(s?s.res:''),rem:o.rem||(s?s.rem:'')};
+    if(s){Object.assign(s,data);upd++}else{s={id:uid(),pays:[],fees:{},session:cur(),...data};DB.students.push(s);add++}
+    if(h0&&o.fee!==undefined&&o.fee!==''&&!isNaN(+o.fee))s.fees[h0.id]=+o.fee;
+    const pa=+o.paid;if(pa>0&&!s.pays.some(p=>p.note==='Imported'&&p.amt===pa))s.pays.push({id:uid(),head:h0?h0.id:'',amt:pa,date:today(),note:'Imported'});
+  });
+  save();parsed=[];$('impPrev').innerHTML='';$('file').value='';renderAll();toast(`Imported: ${add} new, ${upd} updated`);
+}
+function loadSeed(){
+  let add=0;if(!DB.settings.classes.includes(SEED_CLASS))DB.settings.classes.unshift(SEED_CLASS);
+  SEED.forEach(o=>{if(!SS().some(x=>x.roll===o.roll&&x.name===o.name)){DB.students.push({id:uid(),pays:[],fees:{},session:cur(),cls:SEED_CLASS,res:'',rem:'',...o});add++}});
+  save();renderAll();toast(add?`${add} students added`:'All built-in students already exist')}
+const HEAD=['Roll','Roll Privi','TOT','STUDENT NAME (ENGLISH)','STUDENT NAME (BANGLA)',"FATHER'S NAME (ENGLISH)","FATHER'S NAME (BANGLA)","MOTHER'S NAME (ENGLISH)",'DOB','ADDRESS','CONTACT','Class','Fee','Paid','Result','Remark'];
+function downloadTemplate(){
+  const rows=[HEAD,['1','3','38','Md Ali Hasan','মোঃ আলী হাসান','Md Rabeul Islam','মোঃ রবিউল ইসলাম','Mst Ferdousi Begum','2010-01-03','Khutamara','01310354419','Ten','1200','500','Pass','Good']];
+  dl('student-template.xlsx',writeXlsx(rows))}
+function exportRows(){const H=heads();return[['Session'].concat(HEAD).concat(['Due'],H.map(h=>h.name+' – fee'),H.map(h=>h.name+' – paid')),...DB.students.map(s=>[s.session||cur(),s.roll,s.prevRoll,s.tot,s.name,s.nameBn,s.father,s.fatherBn,s.mother,s.dob,s.addr,s.phone,s.cls,feeOf(s),paid(s),s.res,s.rem,dueOf(s),...H.map(h=>feeHead(s,h)),...H.map(h=>paidHead(s,h.id))])]}
+function exportXlsx(){dl('students-'+today()+'.xlsx',writeXlsx(exportRows()))}
+function exportCsv(){const t=exportRows().map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');dl('students-'+today()+'.csv','\ufeff'+t,'text/csv;charset=utf-8')}
+function dl(name,data,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click()}
+/* ===================== Backup & sync ===================== */
+function bkInfo(){try{return JSON.parse(localStorage.getItem('sam_lastbk'))||null}catch(e){return null}}
+function markBackup(where){try{localStorage.setItem('sam_lastbk',JSON.stringify({t:Date.now(),w:where}))}catch(e){}renderBackup()}
+function goTab(t){const b=document.querySelector('nav button[data-t='+t+']');if(b)b.click()}
+function renderBackup(){
+  const i=bkInfo(),d=i?Math.floor((Date.now()-i.t)/864e5):null;
+  if($('bkLast'))$('bkLast').textContent=i?`Last backup: ${new Date(i.t).toLocaleString()} (${i.w})`:'No backup has been taken yet.';
+  const bar=$('bkBar');
+  if(bar){const need=DB.students.length>0&&(i===null||d>=7);bar.style.display=need?'block':'none';
+    bar.innerHTML=need?`⚠ ${i?`No backup for ${d} days`:'No backup taken yet'} – <a href="#" onclick="backup();return false">download a backup now</a> or set an auto-backup folder in <a href="#" onclick="goTab('imp');return false">Import / Export</a>.`:''}
+  if($('bkFolder'))$('bkFolder').textContent=DESK?(BK.dir?'✔ '+BK.dir:'No folder set'):(BK.handle?(BK.ok?'✔ '+BK.handle.name+' – auto-backup is on':'⚠ '+BK.handle.name+' – click "Re-allow access"'):'No folder set')}
+function backup(){dl('madrasah-backup-'+today()+'.json',JSON.stringify(DB),'application/json');markBackup('downloaded file')}
+function applyRestore(d){if(!d||!d.students||!d.settings)throw new Error('bad file');migrate(d);DB=d;save();renderAll()}
+function restore(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{applyRestore(JSON.parse(r.result));toast('Backup restored')}catch(x){toast('Invalid backup file')}};r.readAsText(f);e.target.value=''}
+/* --- folder (File System Access API, or desktop app) --- */
+function idb(mode,fn){return new Promise((res,rej)=>{const o=indexedDB.open('sam_handles',1);o.onupgradeneeded=()=>o.result.createObjectStore('h');
+  o.onerror=()=>rej(o.error);o.onsuccess=()=>{try{const tx=o.result.transaction('h',mode),q=fn(tx.objectStore('h'));tx.oncomplete=()=>res(q&&q.result);tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error)}catch(e){rej(e)}}})}
+const idbGet=k=>idb('readonly',st=>st.get(k));
+function scheduleBackup(){if(!BK.handle&&!BK.dir)return;clearTimeout(BK.timer);BK.timer=setTimeout(()=>writeBackup(false),2500)}
+async function perm(ask){const h=BK.handle;if(!h)return false;
+  try{let p=await h.queryPermission({mode:'readwrite'});if(p!=='granted'&&ask)p=await h.requestPermission({mode:'readwrite'});BK.ok=p==='granted'}catch(e){BK.ok=false}
+  renderBackup();return BK.ok}
+async function putFile(n,json){const fh=await BK.handle.getFileHandle(n,{create:true});const w=await fh.createWritable();await w.write(json);await w.close()}
+async function writeBackup(say){
+  const json=JSON.stringify(DB),day=today();
+  try{
+    if(DESK&&BK.dir){await DESK.writeBackup('madrasah-backup-latest.json',json);await DESK.writeBackup('madrasah-backup-'+day+'.json',json);markBackup('folder')}
+    else if(BK.handle){if(!(await perm(false))){if(say)toast('Click "Re-allow access" first');return}
+      await putFile('madrasah-backup-latest.json',json);await putFile('madrasah-backup-'+day+'.json',json);markBackup('folder '+BK.handle.name)}
+    else{if(say)toast('Choose a backup folder first');return}
+    if(say)toast('Backup written')
+  }catch(e){BK.ok=false;renderBackup();if(say)toast('Backup failed: '+e.message)}}
+async function chooseBackup(){
+  try{
+    if(DESK&&DESK.chooseBackupDir){const p=await DESK.chooseBackupDir();if(!p)return;BK.dir=p;BK.ok=true}
+    else{if(!window.showDirectoryPicker)return toast('This browser cannot pick a folder – use Chrome or Edge, or the desktop app');
+      BK.handle=await showDirectoryPicker({mode:'readwrite'});BK.ok=true;try{await idb('readwrite',st=>st.put(BK.handle,'dir'))}catch(e){}}
+    await writeBackup(true)
+  }catch(e){if(e.name!=='AbortError')toast('Could not set folder: '+e.message)}}
+async function clearBackup(){BK.handle=null;BK.dir=null;BK.ok=false;try{await idb('readwrite',st=>st.delete('dir'))}catch(e){}
+  try{if(DESK&&DESK.clearBackupDir)await DESK.clearBackupDir()}catch(e){}renderBackup();toast('Auto-backup stopped')}
+/* --- direct Google Drive (Google Identity Services + Drive API) --- */
+let gTok=null,gExp=0;
+function loadGis(){return new Promise((res,rej)=>{if(window.google&&google.accounts&&google.accounts.oauth2)return res();
+  const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.onload=res;sc.onerror=()=>rej(new Error('Cannot reach Google (offline?)'));document.head.appendChild(sc)})}
+async function gToken(){
+  const cid=($('gClient').value||'').trim();if(!cid)throw new Error('Paste your Google Client ID first');
+  if(location.protocol==='file:')throw new Error('Google sign-in does not work on a file page. Open the app from http://localhost or https, or use the backup-folder method.');
+  try{localStorage.setItem('sam_gclient',cid)}catch(e){}
+  if(gTok&&Date.now()<gExp-60000)return gTok;
+  await loadGis();
+  return new Promise((res,rej)=>{google.accounts.oauth2.initTokenClient({client_id:cid,scope:'https://www.googleapis.com/auth/drive.file',
+    callback:r=>{if(r.error)return rej(new Error('Google: '+r.error));gTok=r.access_token;gExp=Date.now()+(r.expires_in||3600)*1000;res(gTok)}}).requestAccessToken()})}
+async function gFetch(url,opt={}){const t=await gToken();const r=await fetch(url,{...opt,headers:{...(opt.headers||{}),Authorization:'Bearer '+t}});if(!r.ok)throw new Error('Google Drive error '+r.status);return r}
+const GNAME='madrasah-accounts-backup.json';
+async function gFind(){const q=encodeURIComponent(`name='${GNAME}' and trashed=false`);
+  const r=await gFetch('https://www.googleapis.com/drive/v3/files?fields=files(id,modifiedTime)&orderBy=modifiedTime%20desc&q='+q);return ((await r.json()).files||[])[0]||null}
+async function driveBackup(){
+  try{const f=await gFind(),b='sam_boundary_7f3a';
+    const body=`--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({name:GNAME,mimeType:'application/json'})}\r\n--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(DB)}\r\n--${b}--`;
+    await gFetch(f?`https://www.googleapis.com/upload/drive/v3/files/${f.id}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+      {method:f?'PATCH':'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body});
+    markBackup('Google Drive');toast('Backed up to Google Drive')}catch(e){toast(e.message)}}
+async function driveRestore(){
+  try{const f=await gFind();if(!f)return toast('No backup found in this Google Drive');
+    if(!confirm('Replace ALL current data with the Google Drive backup from '+new Date(f.modifiedTime).toLocaleString()+'?'))return;
+    const r=await gFetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`);applyRestore(await r.json());toast('Restored from Google Drive')}catch(e){toast(e.message)}}
+/* --- small text prompt (window.prompt is not available in the desktop app) --- */
+let askRes=null;
+function askText(msg,def=''){return new Promise(r=>{askRes=r;$('askT').textContent=msg;$('askI').value=def;$('mAsk').classList.add('on');setTimeout(()=>$('askI').focus(),50)})}
+function askDone(v){$('mAsk').classList.remove('on');const r=askRes;askRes=null;if(r)r(v)}
+/* ===================== Offline .xlsx reader / writer (no library) ===================== */
+async function inflateRaw(u8){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(u8);w.close();return new Uint8Array(await new Response(ds.readable).arrayBuffer())}
+async function unzip(buf){
+  const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;
+  while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('not a zip');
+  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const out={},td=new TextDecoder();
+  for(let i=0;i<n;i++){
+    const method=dv.getUint16(p+10,true),cs=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true);
+    const name=td.decode(u8.subarray(p+46,p+46+nl)),st=off+30+dv.getUint16(off+26,true)+dv.getUint16(off+28,true),data=u8.subarray(st,st+cs);
+    out[name]=method===0?data:method===8?await inflateRaw(data):null;p+=46+nl+el+cl}
+  return out}
+async function readXlsxGrid(buf){
+  const z=await unzip(buf),td=new TextDecoder(),P=t=>new DOMParser().parseFromString(td.decode(t),'application/xml'),ss=[];
+  if(z['xl/sharedStrings.xml'])P(z['xl/sharedStrings.xml']).querySelectorAll('si').forEach(si=>ss.push([...si.querySelectorAll(':scope > t, :scope > r > t')].map(t=>t.textContent).join('')));
+  let path=null;
+  try{const wb=P(z['xl/workbook.xml']),rel=P(z['xl/_rels/workbook.xml.rels']),sh=wb.querySelector('sheet');
+    const rid=sh.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id')||sh.getAttribute('r:id');
+    const t=[...rel.querySelectorAll('Relationship')].find(r=>r.getAttribute('Id')===rid).getAttribute('Target');path=t.startsWith('/')?t.slice(1):'xl/'+t}catch(e){}
+  if(!path||!z[path])path=Object.keys(z).filter(k=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort((a,b)=>parseInt(a.match(/\d+/g).pop())-parseInt(b.match(/\d+/g).pop()))[0];
+  if(!path)throw new Error('no sheet');
+  const grid=[];
+  for(const c of P(z[path]).querySelectorAll('c')){
+    const m=/^([A-Z]+)(\d+)$/.exec(c.getAttribute('r')||'');if(!m)continue;let ci=0;for(const ch of m[1])ci=ci*26+ch.charCodeAt(0)-64;ci--;const ri=+m[2]-1;
+    const t=c.getAttribute('t'),ve=c.querySelector('v');let v='';
+    if(t==='s')v=ss[+ve.textContent]??'';else if(t==='inlineStr')v=[...c.querySelectorAll('t')].map(x=>x.textContent).join('');
+    else if(t==='b')v=ve&&ve.textContent==='1'?'TRUE':'FALSE';else if(t==='str')v=ve?ve.textContent:'';else if(t==='e')v='';
+    else if(ve&&ve.textContent!==''){v=Number(ve.textContent);if(isNaN(v))v=ve.textContent}
+    (grid[ri]=grid[ri]||[])[ci]=v}
+  const w=Math.max(0,...Array.from(grid,r=>r?r.length:0));
+  return Array.from({length:grid.length},(_,i)=>Array.from({length:w},(_,j)=>grid[i]&&grid[i][j]!==undefined?grid[i][j]:''))}
+const CRCT=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t.push(c>>>0)}return t})();
+const crc32=u=>{let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRCT[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+function zipStore(files){
+  const enc=new TextEncoder(),parts=[],cen=[];let off=0;
+  for(const f of files){const nm=enc.encode(f.name),crc=crc32(f.data),n=f.data.length;
+    const lh=new DataView(new ArrayBuffer(30));lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(12,0x5C21,true);lh.setUint32(14,crc,true);lh.setUint32(18,n,true);lh.setUint32(22,n,true);lh.setUint16(26,nm.length,true);
+    parts.push(new Uint8Array(lh.buffer),nm,f.data);
+    const ch=new DataView(new ArrayBuffer(46));ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(14,0x5C21,true);ch.setUint32(16,crc,true);ch.setUint32(20,n,true);ch.setUint32(24,n,true);ch.setUint16(28,nm.length,true);ch.setUint32(42,off,true);
+    cen.push(new Uint8Array(ch.buffer),nm);off+=30+nm.length+n}
+  const cs=cen.reduce((a,x)=>a+x.length,0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(e.buffer)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+function colName(i){let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s}
+const xe=v=>String(v).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');
+function writeXlsx(rows,name='Students'){
+  const X='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',R='http://schemas.openxmlformats.org/officeDocument/2006/relationships',enc=new TextEncoder();
+  const sd=rows.map((r,ri)=>`<row r="${ri+1}">`+r.map((v,ci)=>{if(v===null||v===undefined||v==='')return'';const ref=colName(ci)+(ri+1);
+    return typeof v==='number'&&isFinite(v)?`<c r="${ref}"><v>${v}</v></c>`:`<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xe(v)}</t></is></c>`}).join('')+'</row>').join('');
+  const F=[['[Content_Types].xml',X+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'],
+   ['_rels/.rels',X+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${R}/officeDocument" Target="xl/workbook.xml"/></Relationships>`],
+   ['xl/workbook.xml',X+`<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="${R}"><sheets><sheet name="${xe(name)}" sheetId="1" r:id="rId1"/></sheets></workbook>`],
+   ['xl/_rels/workbook.xml.rels',X+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${R}/worksheet" Target="worksheets/sheet1.xml"/></Relationships>`],
+   ['xl/worksheets/sheet1.xml',X+`<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${sd}</sheetData></worksheet>`]];
+  return zipStore(F.map(([n,t])=>({name:n,data:enc.encode(t)})))}
+function wipe(){if(confirm('Delete ALL students and collections? Settings are kept.')&&confirm('Really sure? This cannot be undone.')){DB.students=[];save();renderAll()}}
+
+/* ---- settings ---- */
+function renderSettings(){
+  const s=DB.settings;
+  $('sName').value=s.name;$('sEiin').value=s.eiin;$('sPhone').value=s.phone;
+  $('logoPrev').innerHTML=s.logo?`<img src="${s.logo}">`:'No logo';
+  $('addrList').innerHTML=s.address.map((a,i)=>`<div class="row"><input value="${esc(a.k)}" placeholder="Label" onchange="DB.settings.address[${i}].k=this.value" style="max-width:180px">
+    <input value="${esc(a.v)}" placeholder="Value" onchange="DB.settings.address[${i}].v=this.value"><button class="btn s rd" onclick="delAddr(${i})">✕</button></div>`).join('');
+  $('sesList').innerHTML=s.sessions.map((x,i)=>`<div class="row"><input value="${esc(x)}" onchange="renameSession(${i},this.value)"><span class="hint" style="align-self:center;min-width:110px">${DB.students.filter(t=>t.session===x).length} students${x===s.session?' • current':''}</span><button class="btn s gr" onclick="setSession(DB.settings.sessions[${i}])">Use</button><button class="btn s rd" onclick="delSession(${i})">✕</button></div>`).join('');
+  $('headList').innerHTML=s.heads.map((h,i)=>`<div class="row"><input value="${esc(h.name)}" placeholder="Head name" onchange="DB.settings.heads[${i}].name=this.value">
+    <input type="number" min="0" value="${+h.amt||0}" placeholder="Default ৳" style="max-width:140px;flex:none" onchange="DB.settings.heads[${i}].amt=+this.value||0"><button class="btn s rd" onclick="delHead(${i})">✕</button></div>`).join('')||'<p class="hint">No fee heads</p>';
+  $('clsList').innerHTML=s.classes.map((c,i)=>`<div class="row"><input value="${esc(c)}" onchange="renameCls(${i},this.value)"><button class="btn s rd" onclick="delCls(${i})">✕</button></div>`).join('');
+}
+function setSession(v){DB.settings.session=v;save();renderAll()}
+async function addSession(){
+  const n=((await askText('New session name (e.g. 2026-2027):'))||'').trim();if(!n)return;
+  if(DB.settings.sessions.includes(n))return toast('Session already exists');
+  DB.settings.sessions.push(n);save();renderAll();toast('Session added')}
+function renameSession(i,v){v=v.trim();const old=DB.settings.sessions[i];if(!v||v===old||DB.settings.sessions.includes(v))return renderSettings();
+  DB.settings.sessions[i]=v;DB.students.forEach(s=>{if((s.session||old)===old)s.session=v});if(DB.settings.session===old)DB.settings.session=v;save();renderAll()}
+function delSession(i){const x=DB.settings.sessions[i],n=DB.students.filter(s=>s.session===x).length;
+  if(DB.settings.sessions.length<2)return toast('At least one session is required');
+  if(!confirm(`Delete session "${x}"${n?` and its ${n} student record(s) with all collections`:''}?`))return;
+  DB.students=DB.students.filter(s=>s.session!==x);DB.settings.sessions.splice(i,1);
+  if(DB.settings.session===x)DB.settings.session=DB.settings.sessions[0];save();renderAll()}
+const keyOf=s=>s.key||s.id;
+const resOk=(s,v)=>!v||(v==='none'?!s.res:s.res===v);
+const stOk=(s,v)=>!v||(v==='due'?dueOf(s)>0:v==='clear'?dueOf(s)===0:v==='partial'?(dueOf(s)>0&&paid(s)>0):(dueOf(s)>0&&paid(s)===0));
+function openPromote(){
+  const L=shownStudents();if(!L.length)return toast('No students shown to promote');
+  const others=DB.settings.sessions.filter(x=>x!==cur());
+  $('pr_ses').innerHTML='<option value="">— choose —</option>'+others.map(x=>`<option>${esc(x)}</option>`).join('');
+  $('pr_new').value='';fillClassSelect($('pr_cls'));
+  $('pr_info').textContent=`${L.length} shown student(s) from ${cur()} will be copied. Fees, collections and results start fresh in the new session.`;
+  $('mPro').classList.add('on')}
+function doPromote(){
+  const L=shownStudents();let t=$('pr_new').value.trim()||$('pr_ses').value;if(!t)return toast('Choose or type a target session');
+  if(t===cur())return toast('Target must be a different session');
+  if(!DB.settings.sessions.includes(t))DB.settings.sessions.push(t);
+  const cls=$('pr_cls').value;let n=0,skip=0;
+  L.forEach(s=>{const k=keyOf(s);if(DB.students.some(x=>x.session===t&&keyOf(x)===k)){skip++;return}
+    const {id,pays,fees,res,rem,...rest}=s;DB.students.push({...rest,id:uid(),key:k,session:t,cls,prevRoll:s.roll,fees:{},pays:[],res:'',rem:''});n++});
+  save();closeM('mPro');DB.settings.session=t;renderAll();toast(`${n} copied to ${t}${skip?`, ${skip} already there`:''}`)}
+function printReceipt(sid,pid){
+  const s=DB.students.find(x=>x.id===sid),p=s&&s.pays.find(x=>x.id===pid);if(!p)return;
+  const st=DB.settings,addr=st.address.filter(x=>x.v).map(x=>x.v).join(', '),h=heads().find(x=>x.id===p.head);
+  const hf=h?feeHead(s,h):0,hp=h?paidHead(s,h.id):0;
+  $('receipt').innerHTML=`<div class="rc"><div class="rch">${st.logo?`<img src="${st.logo}">`:''}<div><h2>${esc(st.name)}</h2><div>${esc(addr)}</div><div>${[st.eiin?'EIIN: '+esc(st.eiin):'',st.phone?'Phone: '+esc(st.phone):''].filter(Boolean).join(' | ')}</div></div></div>
+  <h3 style="text-align:center;margin:6px 0">Fee Receipt / টাকা প্রাপ্তি রসিদ</h3>
+  <table class="rt"><tr><td>Receipt No</td><td>${esc(p.no||'—')}</td></tr><tr><td>Date</td><td>${esc(p.date)}</td></tr><tr><td>Session</td><td>${esc(s.session||cur())}</td></tr>
+  <tr><td>Student</td><td>${esc(s.name)}${s.nameBn?' ('+esc(s.nameBn)+')':''}</td></tr><tr><td>Roll / Class</td><td>${esc(s.roll)} / ${esc(s.cls)}</td></tr>
+  <tr><td>Father</td><td>${esc(s.father)}${s.fatherBn?' ('+esc(s.fatherBn)+')':''}</td></tr>
+  <tr><td>Fee head (খাত)</td><td>${esc(headName(p.head))}</td></tr><tr><td>Amount received</td><td><b>${taka(p.amt)}</b></td></tr>
+  <tr><td>Note</td><td>${esc(p.note)||'&nbsp;'}</td></tr>
+  <tr><td>Head balance</td><td>Fee ${taka(hf)} • Paid ${taka(hp)} • Due ${taka(Math.max(0,hf-hp))}</td></tr>
+  <tr><td>Total balance</td><td>Fee ${taka(feeOf(s))} • Paid ${taka(paid(s))} • Due ${taka(dueOf(s))}</td></tr></table>
+  <div class="sig"><div>Received by</div><div>Authorised signature</div></div></div>`;
+  document.body.classList.add('rcpt');window.print();document.body.classList.remove('rcpt')}
+async function quickHead(){
+  const name=((await askText('New fee head name (e.g. Form Fill-up, Registration, Library):'))||'').trim();if(!name)return;
+  if(heads().some(h=>h.name.toLowerCase()===name.toLowerCase()))return toast('This fee head already exists');
+  const aa=await askText('Default amount per student (৳) – 0 if it varies:','0');if(aa===null)return;const amt=+aa||0;
+  const h={id:'h'+uid(),name,amt};DB.settings.heads.push(h);save();
+  const open=$('mPay').classList.contains('on');renderAll();
+  if(open){$('p_head').innerHTML=heads().map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');$('p_head').value=h.id;payInfo()}
+  toast(`Fee head "${name}" added`)}
+function addHead(){DB.settings.heads.push({id:'h'+uid(),name:'New fee head',amt:0});renderSettings()}
+function delHead(i){const h=DB.settings.heads[i],used=DB.students.reduce((a,s)=>a+(s.pays||[]).filter(p=>p.head===h.id).length,0);
+  if(!confirm(`Delete fee head "${h.name}"?`+(used?`\n${used} collection record(s) use it and will show "—" as head.`:'')))return;DB.settings.heads.splice(i,1);save();renderAll()}
+function addAddr(){DB.settings.address.push({k:'',v:''});renderSettings()}
+function delAddr(i){DB.settings.address.splice(i,1);renderSettings()}
+function addCls(){DB.settings.classes.push('New class');renderSettings()}
+function renameCls(i,v){v=v.trim();if(!v)return renderSettings();const old=DB.settings.classes[i];DB.settings.classes[i]=v;DB.students.forEach(s=>{if(s.cls===old)s.cls=v})}
+function delCls(i){const c=DB.settings.classes[i];if(DB.students.some(s=>s.cls===c)&&!confirm(`Students exist in "${c}". Remove the class from the list anyway?`))return;DB.settings.classes.splice(i,1);renderSettings()}
+function saveSettings(){
+  const s=DB.settings;s.name=$('sName').value.trim();s.eiin=$('sEiin').value.trim();s.phone=$('sPhone').value.trim();
+  save();renderAll();toast('Settings saved')}
+$('logoFile').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{const img=new Image();img.onload=()=>{ // downscale to keep storage small
+    const m=256,k=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);DB.settings.logo=c.toDataURL('image/png');save();renderSettings();renderHeader();toast('Logo uploaded')};img.src=r.result};
+  r.readAsDataURL(f)};
+function removeLogo(){DB.settings.logo='';save();renderSettings();renderHeader()}
+
+/* ---- init ---- */
+function renderAll(){
+  renderHeader();renderBackup();
+  ['fc','rc','dc'].forEach(id=>fillClassSelect($(id),true));fillClassSelect($('bulkCls'));fillFeeFilters();$('bulkHead').innerHTML=heads().map(h=>`<option value="${h.id}">${esc(h.name)}</option>`).join('');{const e=$('impCls'),c=e.value;e.innerHTML='<option value="">'+esc(DB.settings.classes[0]||'—')+' (first class)</option>'+DB.settings.classes.map(x=>`<option>${esc(x)}</option>`).join('');if(c)e.value=c}
+  renderDash();renderStudents();renderFee();renderRes();renderSettings();
+}
+renderAll();
+$('askI').addEventListener('keydown',e=>{if(e.key==='Enter')askDone($('askI').value);if(e.key==='Escape')askDone(null)});
+try{$('gClient').value=localStorage.getItem('sam_gclient')||''}catch(e){}
+(async()=>{
+  try{
+    if(DESK&&DESK.getBackupDir){BK.dir=(await DESK.getBackupDir())||null;BK.ok=!!BK.dir}
+    else if(window.indexedDB){BK.handle=(await idbGet('dir'))||null;if(BK.handle)await perm(false)}
+  }catch(e){}
+  renderBackup();
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+})();
+</script>
+<script>if('serviceWorker' in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+<style>
+#authBox{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0f766e,#115e59);display:flex;align-items:center;justify-content:center;padding:16px;font-family:"Segoe UI","Noto Sans Bengali",Arial,sans-serif}
+#authBox .card{background:#fff;border-radius:14px;padding:28px;width:100%;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+#authBox h2{margin:0 0 4px;color:#0f766e;font-size:22px;text-align:center}
+#authBox p.sub{margin:0 0 18px;text-align:center;color:#64748b;font-size:13px}
+#authBox label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}
+#authBox input{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px}
+#authBox button.go{width:100%;margin-top:18px;padding:11px;border:0;border-radius:8px;background:#0f766e;color:#fff;font-size:15px;cursor:pointer}
+#authBox button.go:hover{background:#115e59}
+#authBox .err{color:#dc2626;font-size:13px;margin-top:10px;min-height:16px;text-align:center}
+#authBox a{color:#0f766e;font-size:13px;cursor:pointer;display:block;text-align:center;margin-top:12px}
+#authBox .rec{background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px;margin-top:12px;font-size:13px;text-align:center}
+#authBox .rec b{display:block;font-size:20px;letter-spacing:2px;margin:6px 0;user-select:all}
+#admModal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px}
+#admModal .card{background:#fff;border-radius:12px;padding:22px;width:100%;max-width:380px}
+#admModal h3{margin:0 0 6px}
+#admModal label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}
+#admModal input{width:100%}
+.authbtns{display:flex;gap:6px;margin-left:auto}
+.authbtns button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:#fff;padding:7px 12px;border-radius:6px;cursor:pointer;font:inherit}
+.authbtns button:hover{background:rgba(255,255,255,.3)}
+@media print{#authBox,#admModal,.authbtns{display:none!important}}
+</style>
+
+<div id="authBox" style="display:none"><div class="card"><h2>🕌 Madrasah Accounts</h2><p class="sub" id="aSub"></p><div id="aBody"></div></div></div>
+
+<div id="admModal"><div class="card">
+  <h3>👤 Admin Panel</h3><p style="margin:0;color:#64748b;font-size:13px">Change admin username or password</p>
+  <label>Current password</label><input type="password" id="mOld" autocomplete="current-password">
+  <label>New username</label><input id="mUser" autocomplete="username">
+  <label>New password (leave empty to keep)</label><input type="password" id="mPass" autocomplete="new-password">
+  <div id="mErr" style="color:#dc2626;font-size:13px;margin-top:8px;min-height:16px"></div>
+  <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="AUTH.saveAdmin()">Save</button><button class="btn gr" onclick="AUTH.closeAdmin()">Cancel</button></div>
+</div></div>
+
+<script>
+const AUTH=(()=>{
+  const K='sam_admin',S='sam_session',L='sam_lock';
+  const $=id=>document.getElementById(id);
+  const get=()=>{try{return JSON.parse(localStorage.getItem(K))}catch(e){return null}};
+  const put=o=>localStorage.setItem(K,JSON.stringify(o));
+  const rnd=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),b=>b.toString(16).padStart(2,'0')).join('');
+  async function hash(pw,salt){
+    const data=new TextEncoder().encode(salt+':'+pw);
+    if(crypto.subtle){
+      const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+      const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(salt),iterations:150000,hash:'SHA-256'},k,256);
+      return Array.from(new Uint8Array(b),x=>x.toString(16).padStart(2,'0')).join('');
+    }
+    let h=5381;for(const c of data)h=((h<<5)+h+c)>>>0;return 'f'+h.toString(16);
+  }
+  const recCode=()=>(rnd(8).toUpperCase().match(/.{4}/g)).join('-');
+  function show(){ $('authBox').style.display='flex'; document.body.style.overflow='hidden'; }
+  function hide(){ $('authBox').style.display='none'; document.body.style.overflow=''; addButtons(); }
+  function addButtons(){
+    if(document.querySelector('.authbtns'))return;
+    const d=document.createElement('div');d.className='authbtns noprint';
+    d.innerHTML='<button onclick="AUTH.openAdmin()">👤 Admin</button><button onclick="AUTH.logout()">⏻ Logout</button>';
+    document.querySelector('header').appendChild(d);
+  }
+  function err(m){$('aErr').textContent=m||''}
+  function viewSetup(){
+    $('aSub').textContent='First time setup – create the admin account';
+    $('aBody').innerHTML='<label>Admin username</label><input id="aU" autocomplete="username"><label>Password (min 6 characters)</label><input type="password" id="aP" autocomplete="new-password"><label>Confirm password</label><input type="password" id="aP2" autocomplete="new-password"><div class="err" id="aErr"></div><button class="go" id="aGo">Create admin</button>';
+    $('aGo').onclick=async()=>{
+      const u=$('aU').value.trim(),p=$('aP').value;
+      if(!u)return err('Enter a username');
+      if(p.length<6)return err('Password must be at least 6 characters');
+      if(p!==$('aP2').value)return err('Passwords do not match');
+      const salt=rnd(16),rc=recCode(),rsalt=rnd(16);
+      put({u,salt,h:await hash(p,salt),rsalt,rh:await hash(rc,rsalt)});
+      sessionStorage.setItem(S,'1');
+      $('aSub').textContent='Admin created ✔';
+      $('aBody').innerHTML='<div class="rec">Your <b>recovery code</b> (use it if you forget the password). Write it down now – it is shown only once:<b>'+rc+'</b></div><button class="go" id="aOk">I saved it – Continue</button>';
+      $('aOk').onclick=hide;
+    };
+  }
+  function viewLogin(){
+    $('aSub').textContent='Admin login';
+    $('aBody').innerHTML='<label>Username</label><input id="aU" autocomplete="username"><label>Password</label><input type="password" id="aP" autocomplete="current-password"><div class="err" id="aErr"></div><button class="go" id="aGo">Login</button><a id="aForgot">Forgot password?</a>';
+    const go=async()=>{
+      const lk=+localStorage.getItem(L)||0;
+      if(Date.now()<lk)return err('Too many attempts. Wait '+Math.ceil((lk-Date.now())/1000)+' seconds.');
+      const a=get(),u=$('aU').value.trim(),p=$('aP').value;
+      if(a&&u===a.u&&await hash(p,a.salt)===a.h){sessionStorage.setItem(S,'1');localStorage.removeItem(L);sessionStorage.removeItem('sam_try');hide();return}
+      const n=(+sessionStorage.getItem('sam_try')||0)+1;sessionStorage.setItem('sam_try',n);
+      if(n>=5){localStorage.setItem(L,Date.now()+30000);sessionStorage.setItem('sam_try',0);err('Too many attempts. Wait 30 seconds.')}
+      else err('Wrong username or password');
+    };
+    $('aGo').onclick=go;
+    $('aP').addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+    $('aU').addEventListener('keydown',e=>{if(e.key==='Enter')$('aP').focus()});
+    $('aForgot').onclick=viewReset;
+  }
+  function viewReset(){
+    $('aSub').textContent='Reset password with recovery code';
+    $('aBody').innerHTML='<label>Recovery code</label><input id="aR" placeholder="XXXX-XXXX-XXXX-XXXX"><label>New password (min 6)</label><input type="password" id="aP" autocomplete="new-password"><div class="err" id="aErr"></div><button class="go" id="aGo">Reset password</button><a id="aBack">← Back to login</a>';
+    $('aBack').onclick=viewLogin;
+    $('aGo').onclick=async()=>{
+      const a=get(),r=$('aR').value.trim().toUpperCase(),p=$('aP').value;
+      if(p.length<6)return err('Password must be at least 6 characters');
+      if(!a||await hash(r,a.rsalt)!==a.rh)return err('Wrong recovery code');
+      const salt=rnd(16),rc=recCode(),rsalt=rnd(16);
+      put({u:a.u,salt,h:await hash(p,salt),rsalt,rh:await hash(rc,rsalt)});
+      sessionStorage.setItem(S,'1');
+      $('aSub').textContent='Password changed ✔';
+      $('aBody').innerHTML='<div class="rec">Your <b>new recovery code</b> – write it down:<b>'+rc+'</b></div><button class="go" id="aOk">Continue</button>';
+      $('aOk').onclick=hide;
+    };
+  }
+  return{
+    init(){
+      if(!get()){show();viewSetup()}
+      else if(sessionStorage.getItem(S)==='1'){hide()}
+      else{show();viewLogin()}
+    },
+    logout(){sessionStorage.removeItem(S);location.reload()},
+    openAdmin(){const a=get();$('mUser').value=a.u;$('mOld').value='';$('mPass').value='';$('mErr').textContent='';$('admModal').style.display='flex'},
+    closeAdmin(){$('admModal').style.display='none'},
+    async saveAdmin(){
+      const a=get(),u=$('mUser').value.trim(),np=$('mPass').value,e=$('mErr');
+      if(await hash($('mOld').value,a.salt)!==a.h){e.textContent='Current password is wrong';return}
+      if(!u){e.textContent='Username cannot be empty';return}
+      if(np&&np.length<6){e.textContent='New password must be at least 6 characters';return}
+      a.u=u;if(np){a.salt=rnd(16);a.h=await hash(np,a.salt)}
+      put(a);this.closeAdmin();alert('Admin details updated');
+    }
+  };
+})();
+AUTH.init();
+</script>
+
+</body>
+</html>
