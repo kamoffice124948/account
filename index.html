@@ -342,11 +342,13 @@ td.n,th.n{text-align:right}
   <h3 id="mPayT">Fee Collection</h3>
   <div class="grid">
     <label style="grid-column:1/-1">Student<select id="p_stu" onchange="payInfo()"></select></label>
-    <label>Fee head (খাত)<span style="display:flex;gap:6px"><select id="p_head" onchange="payInfo()" style="flex:1;min-width:0"></select><button type="button" class="btn s gr" onclick="quickHead()" title="Add a new fee head">➕ New</button></span></label>
-    <label>Amount (৳)<input id="p_amt" type="number" min="0"></label>
+    <label id="lbHead">Fee head (খাত)<span style="display:flex;gap:6px"><select id="p_head" onchange="payInfo()" style="flex:1;min-width:0"></select><button type="button" class="btn s gr" onclick="quickHead()" title="Add a new fee head">➕ New</button></span></label>
+    <label id="lbAmt">Amount (৳)<input id="p_amt" type="number" min="0"></label>
     <label>Date<input id="p_date" type="date"></label>
     <label style="grid-column:1/-1">Note<input id="p_note" placeholder="e.g. January month, receipt no."></label>
   </div>
+  <div id="p_multi" style="margin-top:10px"></div>
+  <p id="p_warn" style="display:none;margin:8px 0;padding:9px 12px;border-radius:8px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;font-size:13px;font-weight:600;white-space:pre-line"></p>
   <p id="p_info" class="hint"></p>
   <div class="bar" style="justify-content:flex-end">
     <button class="btn gr" onclick="closeM('mPay')">Cancel</button>
@@ -612,13 +614,70 @@ function openPay(id,pid){
       $('p_head').value=p.head;$('p_amt').value=p.amt;$('p_date').value=p.date;$('p_note').value=p.note||''}}
   payInfo();$('mPay').classList.add('on');
 }
-function payInfo(){const s=DB.students.find(x=>x.id===$('p_stu').value),h=heads().find(x=>x.id===$('p_head').value);if(!s)return;let t=`Total: fee ${taka(feeOf(s))} • collected ${taka(paid(s))} • due ${taka(dueOf(s))}`;if(h){const f=feeHead(s,h),p=paidHead(s,h.id);t=`${h.name}: fee ${taka(f)} • collected ${taka(p)} • due ${taka(Math.max(0,f-p))}\n`+t;$('p_amt').placeholder=Math.max(0,f-p)||''}$('p_info').style.whiteSpace='pre-line';$('p_info').textContent=t}
+/* paid on a head, optionally ignoring one record (when editing it) */
+function paidHeadEx(s,hid,skip){return (s.pays||[]).filter(p=>p.head===hid&&p.id!==skip).reduce((a,p)=>a+(Number(p.amt)||0),0)}
+function warn(t){const w=$('p_warn');w.textContent=t||'';w.style.display=t?'block':'none'}
+function buildMulti(){
+  const s=DB.students.find(x=>x.id===$('p_stu').value);if(!s)return;
+  const keep={};document.querySelectorAll('#p_multi input[data-h]').forEach(i=>keep[i.dataset.h]=i.value);
+  const done=[];
+  const rows=heads().map(h=>{
+    const f=feeHead(s,h),p=paidHeadEx(s,h.id),due=Math.max(0,f-p),full=f>0&&due<=0;
+    if(full)done.push(h.name);
+    return `<tr${full?' style="background:#f0fdf4"':''}><td>${esc(h.name)}</td><td class="n">${taka(f)}</td><td class="n">${taka(p)}</td><td class="n ${due?'due':'ok'}">${taka(due)}</td>
+    <td>${full?'<span class="tag pass">✔ Already paid</span>':`<input type="number" min="0" data-h="${h.id}" data-due="${due}" data-fee="${f}" placeholder="${due||''}" value="${keep[h.id]||''}" style="width:100px" oninput="chkAmts()">`}</td></tr>`}).join('');
+  $('p_multi').innerHTML=`<div class="tw"><table><tr><th>Fee head</th><th class="n">Fee</th><th class="n">Paid</th><th class="n">Due</th><th>Collect now (৳)</th></tr>${rows}
+  <tr><td colspan="4" class="n"><b>Total collecting</b></td><td><b id="p_tot">৳0</b></td></tr></table></div>`;
+  window._done=done;chkAmts();
+}
+function chkAmts(){
+  let tot=0,msgs=[];
+  document.querySelectorAll('#p_multi input[data-h]').forEach(i=>{
+    const v=+i.value||0,f=+i.dataset.fee,due=+i.dataset.due;tot+=v;
+    const bad=f>0&&v>due;i.style.borderColor=bad?'#dc2626':'';i.style.background=bad?'#fee2e2':'';
+    if(bad){const h=heads().find(x=>x.id===i.dataset.h);msgs.push(`⚠ ${h?h.name:''}: ${taka(v)} is more than the due ${taka(due)} (fee ${taka(f)}). Maximum allowed: ${taka(due)}.`)}
+  });
+  const t=$('p_tot');if(t)t.textContent=taka(tot);
+  const d=window._done||[];
+  if(d.length)msgs.unshift(`⚠ ALREADY PAID – cannot be collected again: ${d.join(', ')}`);
+  warn(msgs.join('\n'));
+}
+function chkEdit(){
+  const s=DB.students.find(x=>x.id===$('p_stu').value),h=heads().find(x=>x.id===$('p_head').value);if(!s||!h)return warn('');
+  const f=feeHead(s,h),others=paidHeadEx(s,h.id,editPay.pid),max=Math.max(0,f-others),v=+$('p_amt').value||0;
+  warn(f>0&&v>max?`⚠ ${h.name}: ${taka(v)} is more than the allowed ${taka(max)} (fee ${taka(f)}, other payments ${taka(others)}).`:'');
+}
+function payInfo(){
+  const s=DB.students.find(x=>x.id===$('p_stu').value);if(!s)return;
+  const multi=!editPay;
+  $('p_multi').style.display=multi?'block':'none';$('lbHead').style.display=multi?'none':'';$('lbAmt').style.display=multi?'none':'';
+  $('p_amt').oninput=editPay?chkEdit:null;
+  const tot=`Total: fee ${taka(feeOf(s))} • collected ${taka(paid(s))} • due ${taka(dueOf(s))}`;
+  $('p_info').style.whiteSpace='pre-line';
+  if(multi){warn('');buildMulti();$('p_info').textContent=tot;return}
+  const h=heads().find(x=>x.id===$('p_head').value);let t=tot;
+  if(h){const f=feeHead(s,h),p=paidHead(s,h.id);t=`${h.name}: fee ${taka(f)} • collected ${taka(p)} • due ${taka(Math.max(0,f-p))}\n`+tot;$('p_amt').placeholder=Math.max(0,f-p)||''}
+  $('p_info').textContent=t;chkEdit();
+}
 function savePay(){
-  const s=DB.students.find(x=>x.id===$('p_stu').value),amt=+$('p_amt').value;
-  if(!s||amt<=0)return toast('Enter a valid amount');
-  if(editPay){const p=s.pays.find(x=>x.id===editPay.pid);Object.assign(p,{head:$('p_head').value,amt,date:$('p_date').value||today(),note:$('p_note').value.trim()});editPay=null}
-  else{DB.settings.rcpt=(DB.settings.rcpt||0)+1;(s.pays=s.pays||[]).push({id:uid(),no:DB.settings.rcpt,head:$('p_head').value,amt,date:$('p_date').value||today(),note:$('p_note').value.trim()})}
-  save();closeM('mPay');renderAll();toast('Collection saved')}
+  const s=DB.students.find(x=>x.id===$('p_stu').value);if(!s)return toast('Select a student');
+  const date=$('p_date').value||today(),note=$('p_note').value.trim();
+  if(editPay){
+    const amt=+$('p_amt').value;if(amt<=0)return toast('Enter a valid amount');
+    const h=heads().find(x=>x.id===$('p_head').value),f=h?feeHead(s,h):0,max=Math.max(0,f-paidHeadEx(s,$('p_head').value,editPay.pid));
+    if(h&&f>0&&amt>max)return alert(`⚠ Cannot save.\n${h.name}: fee is ${taka(f)}, other payments ${taka(f-max)}.\nMaximum for this record: ${taka(max)}.`);
+    const p=s.pays.find(x=>x.id===editPay.pid);Object.assign(p,{head:$('p_head').value,amt,date,note});editPay=null;
+    save();closeM('mPay');renderAll();return toast('Collection saved')}
+  const inputs=[...document.querySelectorAll('#p_multi input[data-h]')].filter(i=>(+i.value||0)>0);
+  if(!inputs.length)return toast(window._done&&window._done.length?'Already paid: '+window._done.join(', '):'Enter an amount for at least one fee head');
+  for(const i of inputs){
+    const h=heads().find(x=>x.id===i.dataset.h),v=+i.value,f=+i.dataset.fee,due=+i.dataset.due;
+    if(f>0&&v>due)return alert(`⚠ Cannot save.\n${h.name}: you entered ${taka(v)} but only ${taka(due)} is due (fee ${taka(f)}).\nPlease correct the amount.`);
+  }
+  DB.settings.rcpt=(DB.settings.rcpt||0)+1;const no=DB.settings.rcpt;
+  inputs.forEach(i=>(s.pays=s.pays||[]).push({id:uid(),no,head:i.dataset.h,amt:+i.value,date,note}));
+  save();closeM('mPay');renderAll();toast(inputs.length>1?`${inputs.length} fee heads saved (Receipt #${no})`:'Collection saved');
+}
 function delPay(sid,pid){if(!confirm('Delete this collection record?'))return;const s=DB.students.find(x=>x.id===sid);s.pays=s.pays.filter(p=>p.id!==pid);save();renderAll()}
 
 /* ---- results ---- */
@@ -981,14 +1040,17 @@ function printReceipt(sid,pid){
   const s=DB.students.find(x=>x.id===sid),p=s&&s.pays.find(x=>x.id===pid);if(!p)return;
   const st=DB.settings,addr=st.address.filter(x=>x.v).map(x=>x.v).join(', '),h=heads().find(x=>x.id===p.head);
   const hf=h?feeHead(s,h):0,hp=h?paidHead(s,h.id):0;
+  const grp=p.no?s.pays.filter(x=>x.no===p.no&&x.date===p.date):[p];
+  const multi=grp.length>1,gtot=grp.reduce((a,x)=>a+(+x.amt||0),0);
+  const headRows=multi?grp.map(x=>{const hh=heads().find(y=>y.id===x.head),f2=hh?feeHead(s,hh):0,p2=hh?paidHead(s,hh.id):0;return `<tr><td>${esc(headName(x.head))}</td><td>${taka(x.amt)} <small>(Fee ${taka(f2)} • Paid ${taka(p2)} • Due ${taka(Math.max(0,f2-p2))})</small></td></tr>`}).join('')+`<tr><td><b>Total received</b></td><td><b>${taka(gtot)}</b></td></tr>`:`<tr><td>Fee head (খাত)</td><td>${esc(headName(p.head))}</td></tr><tr><td>Amount received</td><td><b>${taka(p.amt)}</b></td></tr>`;
   $('receipt').innerHTML=`<div class="rc"><div class="rch">${st.logo?`<img src="${st.logo}">`:''}<div><h2>${esc(st.name)}</h2><div>${esc(addr)}</div><div>${[st.eiin?'EIIN: '+esc(st.eiin):'',st.phone?'Phone: '+esc(st.phone):''].filter(Boolean).join(' | ')}</div></div></div>
   <h3 style="text-align:center;margin:6px 0">Fee Receipt / টাকা প্রাপ্তি রসিদ</h3>
   <table class="rt"><tr><td>Receipt No</td><td>${esc(p.no||'—')}</td></tr><tr><td>Date</td><td>${esc(p.date)}</td></tr><tr><td>Session</td><td>${esc(s.session||cur())}</td></tr>
   <tr><td>Student</td><td>${esc(s.name)}${s.nameBn?' ('+esc(s.nameBn)+')':''}</td></tr><tr><td>Roll / Class</td><td>${esc(s.roll)} / ${esc(s.cls)}</td></tr>
   <tr><td>Father</td><td>${esc(s.father)}${s.fatherBn?' ('+esc(s.fatherBn)+')':''}</td></tr>
-  <tr><td>Fee head (খাত)</td><td>${esc(headName(p.head))}</td></tr><tr><td>Amount received</td><td><b>${taka(p.amt)}</b></td></tr>
+  ${headRows}
   <tr><td>Note</td><td>${esc(p.note)||'&nbsp;'}</td></tr>
-  <tr><td>Head balance</td><td>Fee ${taka(hf)} • Paid ${taka(hp)} • Due ${taka(Math.max(0,hf-hp))}</td></tr>
+  ${multi?'':`<tr><td>Head balance</td><td>Fee ${taka(hf)} • Paid ${taka(hp)} • Due ${taka(Math.max(0,hf-hp))}</td></tr>`}
   <tr><td>Total balance</td><td>Fee ${taka(feeOf(s))} • Paid ${taka(paid(s))} • Due ${taka(dueOf(s))}</td></tr></table>
   <div class="sig"><div>Received by</div><div>Authorised signature</div></div></div>`;
   document.body.classList.add('rcpt');window.print();document.body.classList.remove('rcpt')}
