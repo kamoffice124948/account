@@ -1174,8 +1174,28 @@ try{$('gClient').value=localStorage.getItem('sam_gclient')||''}catch(e){}
 .authbtns{display:flex;gap:6px;margin-left:auto}
 .authbtns button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:#fff;padding:7px 12px;border-radius:6px;cursor:pointer;font:inherit}
 .authbtns button:hover{background:rgba(255,255,255,.3)}
-@media print{#authBox,.authbtns{display:none!important}}
+#admModal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto}
+#admModal .card{background:#fff;border-radius:12px;padding:22px;width:100%;max-width:460px;font-family:"Segoe UI","Noto Sans Bengali",Arial,sans-serif}
+#admModal h3{margin:0 0 4px;color:#0f766e}#admModal label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}
+#admModal input,#admModal textarea{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;box-sizing:border-box}
+#admModal textarea{height:150px;font-family:monospace;font-size:11px}
+#admModal .st{font-size:13px;color:#334155;background:#f1f5f9;border-radius:8px;padding:10px 12px;margin-top:10px;line-height:1.6}
+@media print{#authBox,.authbtns,#admModal{display:none!important}}
 </style>
+<div id="admModal"><div class="card">
+  <h3>👤 Change admin username / password</h3>
+  <p style="margin:0;color:#64748b;font-size:13px">Because this site has no server, the new login is saved by updating the <b>config.js</b> file (steps appear after you click Create).</p>
+  <label>Current password</label><input type="password" id="mOld" autocomplete="current-password">
+  <label>New username</label><input id="mUser" autocomplete="off">
+  <label>New password (min 8 characters)</label><input type="password" id="mPass" autocomplete="new-password">
+  <div id="mErr" style="color:#dc2626;font-size:13px;margin-top:8px;min-height:16px"></div>
+  <div style="display:flex;gap:8px;margin-top:6px"><button class="btn" id="mGo" onclick="AUTH.makeCfg()">Create new config.js</button><button class="btn gr" onclick="AUTH.closeAdmin()">Close</button></div>
+  <div id="mOut" style="display:none">
+    <label>New config.js content</label><textarea id="mTxt" readonly></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn bl" onclick="AUTH.copyCfg()">📋 Copy</button><button class="btn bl" onclick="AUTH.dlCfg()">⬇ Download config.js</button></div>
+    <div class="st"><b>How to apply (GitHub):</b><br>1. Open your repository → click <b>config.js</b> → pencil ✏ (Edit).<br>2. Select all (Ctrl+A), delete, paste the copied text (or upload the downloaded file with Add file → Upload files).<br>3. Click <b>Commit changes</b>. After 1–2 minutes use the new login.<br><span style="color:#b45309">Until you do this, the old password still works.</span></div>
+  </div>
+</div></div>
 <div id="authBox" style="display:none"><div class="card"><h2>🕌 Madrasah Accounts</h2><p class="sub" id="aSub"></p><div id="aBody"></div></div></div>
 <script>
 const AUTH=(()=>{
@@ -1187,7 +1207,7 @@ const AUTH=(()=>{
   }
   function show(){$('authBox').style.display='flex';document.body.style.overflow='hidden'}
   function hide(){$('authBox').style.display='none';document.body.style.overflow='';
-    if(!document.querySelector('.authbtns')){const d=document.createElement('div');d.className='authbtns noprint';d.innerHTML='<button onclick="AUTH.logout()">⏻ Logout</button>';document.querySelector('header').appendChild(d)}}
+    if(!document.querySelector('.authbtns')){const d=document.createElement('div');d.className='authbtns noprint';d.innerHTML='<button onclick="AUTH.openAdmin()">👤 Admin</button><button onclick="AUTH.logout()">⏻ Logout</button>';document.querySelector('header').appendChild(d)}}
   const err=m=>{$('aErr').textContent=m||''};
   function viewLogin(){
     $('aSub').textContent='Admin login – authorised users only';
@@ -1197,7 +1217,7 @@ const AUTH=(()=>{
       if(Date.now()<lk)return err('Too many attempts. Wait '+Math.ceil((lk-Date.now())/1000)+' seconds.');
       const u=$('aU').value.trim(),p=$('aP').value;let ok=false;
       try{for(const a of (window.ADMINS||[])){if(a.u===u&&await hash(p,a.salt)===a.h){ok=true;break}}}catch(e){return err('Login needs https or localhost (secure page).')}
-      if(ok){sessionStorage.setItem(S,'1');localStorage.removeItem(L);sessionStorage.setItem('sam_try',0);hide();return}
+      if(ok){sessionStorage.setItem(S,'1');sessionStorage.setItem('sam_user',u);localStorage.removeItem(L);sessionStorage.setItem('sam_try',0);hide();return}
       const n=(+sessionStorage.getItem('sam_try')||0)+1;sessionStorage.setItem('sam_try',n);
       if(n>=5){localStorage.setItem(L,Date.now()+30000);sessionStorage.setItem('sam_try',0);err('Too many attempts. Wait 30 seconds.')}
       else err('Wrong username or password');
@@ -1211,7 +1231,26 @@ const AUTH=(()=>{
       if(!(window.ADMINS&&window.ADMINS.length)){show();$('aSub').textContent='';$('aBody').innerHTML='<p style="text-align:center;color:#dc2626">No admin account is configured.<br>Open <b>config.js</b> and add an admin (see admin-setup.html).</p>';return}
       if(sessionStorage.getItem(S)==='1')hide();else{show();viewLogin()}
     },
-    logout(){sessionStorage.removeItem(S);location.reload()}
+    logout(){sessionStorage.removeItem(S);sessionStorage.removeItem('sam_user');location.reload()},
+    openAdmin(){$('mUser').value=sessionStorage.getItem('sam_user')||'';$('mOld').value='';$('mPass').value='';$('mErr').textContent='';$('mOut').style.display='none';$('admModal').style.display='flex'},
+    closeAdmin(){$('admModal').style.display='none'},
+    async makeCfg(){
+      const e=$('mErr'),cur=sessionStorage.getItem('sam_user'),list=window.ADMINS||[],me=list.find(a=>a.u===cur),u=$('mUser').value.trim(),np=$('mPass').value;
+      e.textContent='';
+      try{
+        if(!me||await hash($('mOld').value,me.salt)!==me.h)return e.textContent='Current password is wrong';
+        if(!u)return e.textContent='Enter a username';
+        if(np.length<8)return e.textContent='New password must be at least 8 characters';
+        if(list.some(a=>a!==me&&a.u===u))return e.textContent='This username is already used by another admin';
+        const salt=Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
+        const n={u,salt,h:await hash(np,salt)};
+        const lines=list.map(a=>a===me?n:a).map(a=>'  { u: '+JSON.stringify(a.u)+', salt: "'+a.salt+'", h: "'+a.h+'" }');
+        $('mTxt').value='// ADMIN ACCOUNTS – only these accounts can log in. Nobody can create a new account from the website.\n// To change the password: log in, click Admin, and follow the steps.\nwindow.ADMINS = [\n'+lines.join(',\n')+'\n];\n';
+        $('mOut').style.display='block';
+      }catch(x){e.textContent='Could not create (needs https or localhost).'}
+    },
+    copyCfg(){const t=$('mTxt');t.select();try{navigator.clipboard.writeText(t.value)}catch(e){document.execCommand('copy')}},
+    dlCfg(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([$('mTxt').value],{type:'text/javascript'}));a.download='config.js';document.body.appendChild(a);a.click();a.remove()}
   };
 })();
 AUTH.init();
