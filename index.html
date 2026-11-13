@@ -364,6 +364,17 @@ td.n,th.n{text-align:right}
   </div>
 </div></div>
 
+<!-- Student collections (edit) modal -->
+<div class="modal" id="mSP"><div class="mb" style="max-width:820px">
+  <h3 id="spT">Collections</h3>
+  <div id="spWarn"></div>
+  <div class="tw"><table id="spTbl"></table></div>
+  <div class="bar" style="justify-content:flex-end;margin-top:12px">
+    <button class="btn bl" onclick="openPay(window._sp)">💵 New collection</button>
+    <button class="btn gr" onclick="closeM('mSP')">Close</button>
+  </div>
+</div></div>
+
 <!-- Pay modal -->
 <div class="modal" id="mPay"><div class="mb">
   <h3 id="mPayT">Fee Collection</h3>
@@ -627,12 +638,12 @@ function renderFee(){
   const colSpan=H.length+10;
   $('feeTbl').innerHTML='<tr><th>Roll</th><th>Name</th><th>Class</th><th class="mob">Mobile</th><th>Result</th>'+H.map(h=>`<th class="n">${esc(h.name)}<br><small>paid / fee</small></th>`).join('')+'<th class="n">Fee</th><th class="n">Collected</th><th class="n">Due</th><th>Status</th><th class="noprint"></th></tr>'+
    (L.map(s=>`<tr><td>${esc(s.roll)}</td><td>${esc(s.name)}${s.nameBn?` <small>(${esc(s.nameBn)})</small>`:''}</td><td>${esc(s.cls)}</td><td class="mob">${esc(s.phone||'')}</td><td>${resTag(s.res)}</td>`+
-   H.map(h=>{const f=feeHead(s,h),p=paidHead(s,h.id);return`<td class="n ${p<f?'due':'ok'}">${p.toLocaleString('en-IN')} / ${f.toLocaleString('en-IN')}</td>`}).join('')+
+   H.map(h=>{const f=feeHead(s,h),p=paidHead(s,h.id);return`<td class="n ${p<f?'due':'ok'}">${f>0&&p>f?'⚠ ':''}${p.toLocaleString('en-IN')} / ${f.toLocaleString('en-IN')}</td>`}).join('')+
    `<td class="n">${taka(fe(s))}</td><td class="n ok">${taka(pd(s))}</td><td class="n ${du(s)?'due':'ok'}">${taka(du(s))}</td>
-   <td>${{clear:'<span class="tag pass">Clear</span>',partial:'<span class="tag" style="background:#fef3c7;color:#92400e">Partly paid</span>',unpaid:'<span class="tag fail">Due</span>'}[status(s)]}</td><td class="noprint"><button class="btn s bl" onclick="openPay('${s.id}')">Collect</button></td></tr>`).join('')
+   <td>${{clear:'<span class="tag pass">Clear</span>',partial:'<span class="tag" style="background:#fef3c7;color:#92400e">Partly paid</span>',unpaid:'<span class="tag fail">Due</span>'}[status(s)]}</td><td class="noprint"><button class="btn s bl" onclick="openPay('${s.id}')">Collect</button> <button class="btn s am" onclick="openStuPays('${s.id}')">Edit</button></td></tr>`).join('')
    +(L.length?`<tr class="tot" style="font-weight:700;background:#f8fafc"><td colspan="${5+H.length}">Total (${L.length} students)</td><td class="n">${taka(T.f)}</td><td class="n ok">${taka(T.p)}</td><td class="n due">${taka(T.d)}</td><td colspan="2"></td></tr>`:'<tr><td colspan="'+colSpan+'" class="hint">No students match the filters</td></tr>'));
   $('payTbl').innerHTML='<tr><th>Rcpt #</th><th>Date</th><th>Student</th><th>Class</th><th>Fee head</th><th class="n">Amount</th><th>Note</th><th class="noprint"></th></tr>'+
-   (P.map(p=>`<tr><td>${esc(p.no||'')}</td><td>${esc(p.date)}</td><td>${esc(p.s.name)} (${esc(p.s.roll)})</td><td>${esc(p.s.cls)}</td><td>${esc(headName(p.head))}</td><td class="n ok">${taka(p.amt)}</td><td>${esc(p.note)}</td>
+   (P.map(p=>`<tr><td>${esc(p.no||'')}</td><td>${esc(p.date)}</td><td>${esc(p.s.name)} (${esc(p.s.roll)})</td><td>${esc(p.s.cls)}</td><td>${esc(headName(p.head))}${(()=>{const h=heads().find(x=>x.id===p.head),f=h?feeHead(p.s,h):0;return f>0&&paidHead(p.s,p.head)>f?' <span class="tag fail">⚠ over</span>':''})()}</td><td class="n ok">${taka(p.amt)}</td><td>${esc(p.note)}</td>
    <td class="noprint"><button class="btn s bl" onclick="printReceipt('${p.s.id}','${p.id}')">🧾 Receipt</button> <button class="btn s am" onclick="openPay('${p.s.id}','${p.id}')">Edit</button> <button class="btn s rd" onclick="delPay('${p.s.id}','${p.id}')">Delete</button></td></tr>`).join('')||'<tr><td colspan="8" class="hint">No collections match</td></tr>')
    +(P.length?`<tr class="tot" style="font-weight:700;background:#f8fafc"><td colspan="5">Total (${P.length} records)</td><td class="n ok">${taka(inRange)}</td><td colspan="2"></td></tr>`:'');
 }
@@ -702,9 +713,9 @@ function savePay(){
   if(editPay){
     const amt=+$('p_amt').value;if(amt<=0)return toast('Enter a valid amount');
     const h=heads().find(x=>x.id===$('p_head').value),f=h?feeHead(s,h):0,max=Math.max(0,f-paidHeadEx(s,$('p_head').value,editPay.pid));
-    if(h&&f>0&&amt>max)return alert(`⚠ Cannot save.\n${h.name}: fee is ${taka(f)}, other payments ${taka(f-max)}.\nMaximum for this record: ${taka(max)}.`);
+    if(h&&f>0&&amt>max&&!confirm(`⚠ WARNING\n${h.name}: fee is ${taka(f)}, other payments ${taka(f-max)}.\nWith ${taka(amt)} this head will be over-collected by ${taka(amt-max)}.\n\nSave anyway?`))return;
     const p=s.pays.find(x=>x.id===editPay.pid);Object.assign(p,{head:$('p_head').value,amt,date,note});editPay=null;
-    save();closeM('mPay');renderAll();return toast('Collection saved')}
+    save();closeM('mPay');renderAll();refreshSP();return toast('Collection saved')}
   const inputs=[...document.querySelectorAll('#p_multi input[data-h]')].filter(i=>(+i.value||0)>0);
   if(!inputs.length)return toast(window._done&&window._done.length?'Already paid: '+window._done.join(', '):'Enter an amount for at least one fee head');
   for(const i of inputs){
@@ -713,9 +724,22 @@ function savePay(){
   }
   DB.settings.rcpt=(DB.settings.rcpt||0)+1;const no=DB.settings.rcpt;
   inputs.forEach(i=>(s.pays=s.pays||[]).push({id:uid(),no,head:i.dataset.h,amt:+i.value,date,note}));
-  save();closeM('mPay');renderAll();toast(inputs.length>1?`${inputs.length} fee heads saved (Receipt #${no})`:'Collection saved');
+  save();closeM('mPay');renderAll();refreshSP();toast(inputs.length>1?`${inputs.length} fee heads saved (Receipt #${no})`:'Collection saved');
 }
-function delPay(sid,pid){if(!confirm('Delete this collection record?'))return;const s=DB.students.find(x=>x.id===sid);s.pays=s.pays.filter(p=>p.id!==pid);save();renderAll()}
+function openStuPays(id){window._sp=id;renderSP();$('mSP').classList.add('on')}
+function refreshSP(){if($('mSP')&&$('mSP').classList.contains('on'))renderSP()}
+function renderSP(){
+  const s=DB.students.find(x=>x.id===window._sp);if(!s)return;
+  $('spT').textContent=`Collections – ${s.name} (${s.cls} • Roll ${s.roll})`;
+  const over=heads().filter(h=>{const f=feeHead(s,h);return f>0&&paidHead(s,h.id)>f}).map(h=>`${h.name}: fee ${taka(feeHead(s,h))}, collected ${taka(paidHead(s,h.id))} → over by ${taka(paidHead(s,h.id)-feeHead(s,h))}`);
+  $('spWarn').innerHTML=over.length?`<div style="margin:0 0 10px;padding:9px 12px;border-radius:8px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;font-size:13px;font-weight:600">⚠ Over-collected – please correct by editing the amount below:<br>${over.map(esc).join('<br>')}</div>`:`<p class="hint" style="margin:0 0 8px">Total: fee ${taka(feeOf(s))} • collected ${taka(paid(s))} • due ${taka(dueOf(s))}. Editing an amount above the fee will ask for confirmation.</p>`;
+  const P=(s.pays||[]).slice().sort((a,b)=>b.date.localeCompare(a.date)||(b.no||0)-(a.no||0));
+  $('spTbl').innerHTML='<tr><th>Rcpt #</th><th>Date</th><th>Fee head</th><th class="n">Amount</th><th>Note</th><th></th></tr>'+
+    (P.map(p=>{const h=heads().find(x=>x.id===p.head),f=h?feeHead(s,h):0,bad=f>0&&paidHead(s,p.head)>f;
+      return `<tr><td>${esc(p.no||'')}</td><td>${esc(p.date)}</td><td>${esc(headName(p.head))}${bad?' <span class="tag fail">⚠ over</span>':''}</td><td class="n ok">${taka(p.amt)}</td><td>${esc(p.note)}</td>
+      <td><button class="btn s bl" onclick="printReceipt('${s.id}','${p.id}')">🧾</button> <button class="btn s am" onclick="openPay('${s.id}','${p.id}')">Edit</button> <button class="btn s rd" onclick="delPay('${s.id}','${p.id}')">Delete</button></td></tr>`}).join('')||'<tr><td colspan="6" class="hint">No collections yet</td></tr>');
+}
+function delPay(sid,pid){if(!confirm('Delete this collection record?'))return;const s=DB.students.find(x=>x.id===sid);s.pays=s.pays.filter(p=>p.id!==pid);save();renderAll();refreshSP()}
 
 /* ---- results ---- */
 function cardHtml(s){
